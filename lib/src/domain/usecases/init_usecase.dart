@@ -7,7 +7,6 @@ class InitUseCase {
 
   InitUseCase(this.repository);
 
-  @override
   Future<Either<Failure, Unit>> call() async {
     try {
       await repository.initializeProject();

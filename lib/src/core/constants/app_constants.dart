@@ -1,60 +1,17 @@
-import 'dart:io';
-import '../interfaces/command.dart';
-import '../../core/errors/exceptions.dart';
 
-class CommandInterfaceImpl implements CommandInterface {
-  @override
-  Future<void> init() async {
-    try {
-      // Create necessary directories
-      await _createDirectory('lib/components');
-      await _createDirectory('lib/themes');
+class AppConstants {
+  AppConstants._();
+  static const String baseUrl = 'https://flatcn.com/api/v1';
 
-      // Create initial configuration file
-      await _createConfigFile();
+  static const String widgetPath = 'lib/widgets';
+  static const String themePath = 'lib/themes';
+  static const String stylePath = 'lib/themes/style.dart';
+  static const String defaultThemePath = 'lib/themes/default_theme.dart';
+  static const String defaultStylePath = 'lib/themes/style.dart';
 
-      // Create initial theme file
-      await _createDefaultTheme();
-
-      print('✓ Successfully initialized FlatCN UI');
-    } catch (e) {
-      throw InitializationException();
-    }
-  }
-
-  Future<void> _createDirectory(String path) async {
-    final directory = Directory(path);
-    if (!directory.existsSync()) {
-      await directory.create(recursive: true);
-    }
-  }
-
-  Future<void> _createConfigFile() async {
-    final file = File('flatcn.config.json');
-    if (!file.existsSync()) {
-      await file.writeAsString('''
-{
-  "style": "default",
-  "tailwind": {
-    "config": "tailwind.config.js",
-    "css": "src/app/globals.css",
-    "baseColor": "slate",
-    "cssVariables": true
-  },
-  "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils"
-  }
-}
-''');
-    }
-  }
-
-  Future<void> _createDefaultTheme() async {
-    final file = File('lib/themes/default_theme.dart');
-    if (!file.existsSync()) {
-      await file.writeAsString('''
- class AppThemes {
+  static const String zincThemeFileContent = ''' 
+    
+  class AppThemes {
   AppThemes._();
 
   static final ThemeData dark = ThemeData(
@@ -206,9 +163,10 @@ class ChartColors extends ThemeExtension<ChartColors> {
   }
 }
   
-
-
-  import 'package:flutter/material.dart';
+  
+   ''' ; 
+  static const String appPalette = ''' 
+          import 'package:flutter/material.dart';
 
           class AppPalette {
             AppPalette._();
@@ -253,7 +211,11 @@ class ChartColors extends ThemeExtension<ChartColors> {
             static const darkChartColor4 = Color(0xFFD946EF); // --chart-4
             static const darkChartColor5 = Color(0xFFF43F5E); // --chart-5
           }
-''');
-    }
-  }
+  
+   ''' ; 
+
+
+
+
 }
+
