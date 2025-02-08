@@ -8,25 +8,53 @@ import '../../core/errors/exceptions.dart';
 class CommandInterfaceImpl implements CommandInterface {
   @override
   Future<void> init({
-    InitConfigModel? config,
+    required InitConfigModel config,
   }) async {
     try {
-      try {
-        // Create necessary directories
-        await _createDirectory('lib/components');
-        await _createDirectory('lib/themes');
+      // Create necessary directories
+      await _createDirectory(
+        config.themePath ?? 'lib/themes',
+      );
+      await _createDirectory(
+        config.widgetsPath ?? 'lib/widgets',
+      );
 
-        // Create initial configuration file
-        await _createConfigFile();
+      // Create initial configuration file
+      await _createConfigFile(
+        config.widgetsPath,
+        config.themePath,
+        config.style,
+        config.baseColor,
+        config.stateManagement,
+      );
 
-        // Create initial theme file
-        await _createDefaultTheme();
+      // Create initial theme file
+      // if (config.style == 'zinc') {
+      //   await _createTheme(config.themePath);
+      // }
+      // await _createDefaultTheme();
 
-        print('✓ Successfully initialized FlatCN UI');
-      } catch (e) {
-        throw InitializationException();
+      switch (config.style) {
+        case 'Zinc':
+          await _createTheme(
+              config.themePath, AppConstants.zincThemeFileContent);
+          break;
+        case 'Slate':
+          await _createTheme(
+              config.themePath, AppConstants.SlateThemeFileContent);
+          break;
+        case 'Gray':
+          await _createTheme(
+              config.themePath, AppConstants.GrayThemeFileContent);
+          break;
+        default:
+          await _createDefaultTheme();
       }
-    } catch (e) {}
+
+      print('✅ Successfully initialized FlatCN UI');
+    } catch (e) {
+      throw InitializationException();
+    }
   }
 
   Future<void> _createDirectory(String path) async {
@@ -36,22 +64,22 @@ class CommandInterfaceImpl implements CommandInterface {
     }
   }
 
-  Future<void> _createConfigFile() async {
+  Future<void> _createConfigFile(
+    String? widgetsPaht,
+    String? themePath,
+    String? style,
+    String? baseColor,
+    String? stateManagement,
+  ) async {
     final file = File('flatcn.config.json');
     if (!file.existsSync()) {
       await file.writeAsString('''
 {
-  "style": "default",
-  "tailwind": {
-    "config": "tailwind.config.js",
-    "css": "src/app/globals.css",
-    "baseColor": "slate",
-    "cssVariables": true
-  },
-  "aliases": {
-    "components": "@/components",
-    "utils": "@/lib/utils"
-  }
+  "widgetsPath": "$widgetsPaht",
+  "themePath": "$themePath",
+  "style": "${style ?? 'default'}",
+  "baseColor": "${baseColor ?? 'slate'}",
+  "stateManagement": "${stateManagement ?? 'bloc'}"
 }
 ''');
     }
@@ -61,6 +89,16 @@ class CommandInterfaceImpl implements CommandInterface {
     final file = File('lib/themes/default_theme.dart');
     if (!file.existsSync()) {
       await file.writeAsString(AppConstants.zincThemeFileContent);
+    }
+  }
+
+  Future<void> _createTheme(
+    String? themePath,
+    String style,
+  ) async {
+    final file = File('${themePath ?? 'lib/themes'}/app_theme.dart');
+    if (!file.existsSync()) {
+      await file.writeAsString(style);
     }
   }
 
@@ -97,7 +135,8 @@ class CommandInterfaceImpl implements CommandInterface {
         }
         await pubspecFile.writeAsString(content);
 
-        print('\n✓ Added ${config.stateManagement} dependencies to pubspec.yaml');
+        print(
+            '\n✓ Added ${config.stateManagement} dependencies to pubspec.yaml');
         print('Run "flutter pub get" to install the dependencies');
       }
     }

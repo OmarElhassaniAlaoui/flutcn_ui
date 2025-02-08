@@ -1,4 +1,3 @@
-
 class AppConstants {
   AppConstants._();
   static const String baseUrl = 'https://flatcn.com/api/v1';
@@ -9,7 +8,7 @@ class AppConstants {
   static const String defaultThemePath = 'lib/themes/default_theme.dart';
   static const String defaultStylePath = 'lib/themes/style.dart';
 
-  static const String zincThemeFileContent = ''' 
+  static const String zincThemeFileContent = '''
     import 'package:flutter/material.dart';
   class AppThemes {
   AppThemes._();
@@ -164,8 +163,8 @@ class ChartColors extends ThemeExtension<ChartColors> {
 }
   
   
-   ''' ; 
-  static const String appPalette = ''' 
+   ''';
+  static const String appPalette = '''
           import 'package:flutter/material.dart';
 
           class AppPalette {
@@ -212,10 +211,8 @@ class ChartColors extends ThemeExtension<ChartColors> {
             static const darkChartColor5 = Color(0xFFF43F5E); // --chart-5
           }
   
-   ''' ; 
+   ''';
 
-
-
-
+  static const String SlateThemeFileContent = ''' ''';
+  static const String GrayThemeFileContent = ''' ''';
 }
-

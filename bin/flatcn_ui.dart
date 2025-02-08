@@ -30,7 +30,7 @@ class InitCommand extends Command {
     final dialog = CLI_Dialog(
       questions: [
         ['wich path do you choose for setup theme ?', 'theme_path'],
-        ['path to your widgets', 'widgets_path ?'],
+        ['path to your widgets', 'widgets_path'],
       ],
       listQuestions: [
         [
@@ -39,8 +39,8 @@ class InitCommand extends Command {
             "options": [
               "New York",
             ]
-          } , 
-          'style' 
+          },
+          'style'
         ],
         [
           {
@@ -67,6 +67,7 @@ class InitCommand extends Command {
       ],
     );
     final answers = dialog.ask();
+    print(answers);
 
     final result = await initUseCase(
       config: InitConfigEntity(
@@ -78,14 +79,9 @@ class InitCommand extends Command {
       ),
     );
 
-    print(result);
-
     result.fold(
       (failure) => print('Error: ${failure.message}'),
       (_) => null, // Success message is handled in the interface implementation
     );
   }
 }
-
-
-
