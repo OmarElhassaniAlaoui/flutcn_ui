@@ -3,6 +3,7 @@ import '../interfaces/command.dart';
 import '../../core/errors/exceptions.dart';
 
 class CommandInterfaceImpl implements CommandInterface {
+  
   @override
   Future<void> init() async {
     try {

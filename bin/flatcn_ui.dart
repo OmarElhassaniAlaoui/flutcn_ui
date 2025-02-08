@@ -1,5 +1,3 @@
-import 'package:flatcn_ui/flatcn_ui.dart' as flatcn_ui;
-
 import 'package:args/command_runner.dart';
 import 'package:flatcn_ui/src/domain/usecases/init_usecase.dart';
 import 'injection_container.dart' as di;
