@@ -1,9 +1,7 @@
-import 'package:args/args.dart';
+
+import 'package:dartz/dartz.dart';
+import '../../core/errors/failures.dart';
 
 abstract class CommandRepository {
-  Future<void> handleAddCommand(ArgResults command);
-  Future<void> handleInitCommand(ArgResults command);
-  Future<void> handleSearchCommand(ArgResults command);
-  Future<void> handleListCommand();
-  Future<void> handleUpdateCommand();
+  Future<Either<Failure, void>> initializeProject();
 }

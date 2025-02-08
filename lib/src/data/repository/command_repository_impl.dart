@@ -1,34 +1,20 @@
-import 'package:args/src/arg_results.dart';
-import 'package:flatcn_ui/src/domain/repository/command_repository.dart';
+import 'package:dartz/dartz.dart';
+import '../../core/errors/failures.dart';
+import '../../domain/repository/command_repository.dart';
+import '../interfaces/command.dart';
 
 class CommandRepositoryImpl implements CommandRepository {
-  @override
-  Future<void> handleAddCommand(ArgResults command) {
-    // TODO: implement handleAddCommand
-    throw UnimplementedError();
-  }
+  final CommandInterface commandInterface;
+
+  CommandRepositoryImpl(this.commandInterface);
 
   @override
-  Future<void> handleInitCommand(ArgResults command) {
-    // TODO: implement handleInitCommand
-    throw UnimplementedError();
+  Future<Either<Failure, void>> initializeProject() async {
+    try {
+      await commandInterface.init();
+      return const Right(null);
+    } catch (e) {
+      return Left(InitializationFailure());
+    }
   }
-
-  @override
-  Future<void> handleListCommand() {
-    // TODO: implement handleListCommand
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> handleSearchCommand(ArgResults command) {
-    // TODO: implement handleSearchCommand
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> handleUpdateCommand() {
-    // TODO: implement handleUpdateCommand
-    throw UnimplementedError();
-  }
- }
+}
