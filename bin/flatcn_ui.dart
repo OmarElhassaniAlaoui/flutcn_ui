@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:args/command_runner.dart';
 import 'package:cli_dialog/cli_dialog.dart';
+import 'package:flatcn_ui/src/core/constants/qestions.dart';
 import 'package:flatcn_ui/src/domain/entities/init_config_entity.dart';
 import 'package:flatcn_ui/src/domain/usecases/init_usecase.dart';
 import 'injection_container.dart' as di;
@@ -26,49 +29,11 @@ class InitCommand extends Command {
   @override
   Future<void> run() async {
     final initUseCase = di.sl<InitUseCase>();
-
     final dialog = CLI_Dialog(
-      questions: [
-        ['wich path do you choose for setup theme ?', 'theme_path'],
-        ['path to your widgets', 'widgets_path'],
-      ],
-      listQuestions: [
-        [
-          {
-            "question": "Which style would you like to use ?",
-            "options": [
-              "New York",
-            ]
-          },
-          'style'
-        ],
-        [
-          {
-            "question": "Which color would you like to use as base color?",
-            "options": [
-              "Zinc",
-              "Slate",
-              "Gray",
-            ]
-          },
-          'base_color'
-        ],
-        [
-          {
-            "question": "Which state managment do you want to use for widgets",
-            "options": [
-              "Bloc",
-              "Provider",
-              "Riverpod",
-            ]
-          },
-          'state_management'
-        ],
-      ],
+      questions: Questions.initCommandQuestions,
+      listQuestions: Questions.initCommandListQuestions,
     );
     final answers = dialog.ask();
-    print(answers);
-
     final result = await initUseCase(
       config: InitConfigEntity(
         themePath: answers['theme_path'],
@@ -83,5 +48,20 @@ class InitCommand extends Command {
       (failure) => print('Error: ${failure.message}'),
       (_) => null, // Success message is handled in the interface implementation
     );
+  }
+}
+
+class AddCommand extends Command {
+  @override
+  String get description => "add new widgets";
+
+  @override
+  String get name => "add";
+
+  AddCommand();
+
+  @override
+  Future<void> run() async {
+    print("add command");
   }
 }

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flatcn_ui/src/core/constants/app_constants.dart';
+import 'package:flatcn_ui/src/core/constants/file_paths.dart';
 import 'package:flatcn_ui/src/data/models/init_config_model.dart';
 
 import '../interfaces/command.dart';
@@ -11,6 +11,7 @@ class CommandInterfaceImpl implements CommandInterface {
     required InitConfigModel config,
   }) async {
     try {
+      print('🚀 Initializing FlatCN UI...');
       // Create necessary directories
       await _createDirectory(
         config.themePath ?? 'lib/themes',
@@ -28,24 +29,37 @@ class CommandInterfaceImpl implements CommandInterface {
         config.stateManagement,
       );
 
-      // Create initial theme file
-      // if (config.style == 'zinc') {
-      //   await _createTheme(config.themePath);
-      // }
-      // await _createDefaultTheme();
+      print('✅ Created initial configuration file');
+      print("✅ Created widgets directory at ${config.widgetsPath}");
+      print("✅ Created themes directory at ${config.themePath}");
+      print("✅ Created style : ${config.baseColor}");
 
-      switch (config.style) {
-        case 'Zinc':
+      switch (config.baseColor.toLowerCase()) {
+        case 'zinc':
+          print('✅ Creating zinc theme file');
+          print(FilePaths.zincThemeFileContent);
           await _createTheme(
-              config.themePath, AppConstants.zincThemeFileContent);
+            themePath: config.themePath,
+            paletteColors: FilePaths.zincThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
           break;
-        case 'Slate':
+        case 'slate':
+          print('✅ Creating slate theme file');
+
           await _createTheme(
-              config.themePath, AppConstants.SlateThemeFileContent);
+            themePath: config.themePath,
+            paletteColors: FilePaths.slateThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
           break;
-        case 'Gray':
+        case 'gray':
+          print('✅ Creating gray theme file');
           await _createTheme(
-              config.themePath, AppConstants.GrayThemeFileContent);
+            themePath: config.themePath,
+            paletteColors: FilePaths.grayThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
           break;
         default:
           await _createDefaultTheme();
@@ -88,17 +102,25 @@ class CommandInterfaceImpl implements CommandInterface {
   Future<void> _createDefaultTheme() async {
     final file = File('lib/themes/default_theme.dart');
     if (!file.existsSync()) {
-      await file.writeAsString(AppConstants.zincThemeFileContent);
+      await file.create(recursive: true);
+      await file.writeAsString(FilePaths.defaultThemePath);
     }
   }
 
-  Future<void> _createTheme(
+  Future<void> _createTheme({
     String? themePath,
-    String style,
-  ) async {
-    final file = File('${themePath ?? 'lib/themes'}/app_theme.dart');
-    if (!file.existsSync()) {
-      await file.writeAsString(style);
+    required String paletteColors,
+    required String appTheme,
+  }) async {
+    print('🎨 Creating theme file...');
+    final appThemeFile = File('${themePath ?? 'lib/themes'}/app_theme.dart');
+    final appPalleteFile =
+        File('${themePath ?? 'lib/themes'}/app_pallete.dart');
+    if (!appThemeFile.existsSync()) {
+      await appThemeFile.create(recursive: true);
+      await appPalleteFile.create(recursive: true);
+      await appThemeFile.writeAsString(appTheme);
+      await appPalleteFile.writeAsString(paletteColors);
     }
   }
 

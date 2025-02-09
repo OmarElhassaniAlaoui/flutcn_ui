@@ -1,0 +1,12 @@
+{
+    "configurations": [
+      {
+        "name": "Debug FlatCN UI",
+        "type": "dart",
+        "request": "launch",
+        "program": "bin/flatcn_ui.dart",
+        "args": ["init"]
+      }
+    ]
+  }
+  
