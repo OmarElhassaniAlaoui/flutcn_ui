@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flatcn_ui/src/core/constants/file_paths.dart';
 import 'package:flatcn_ui/src/data/models/init_config_model.dart';
-
 import '../interfaces/command.dart';
 import '../../core/errors/exceptions.dart';
 
 class CommandInterfaceImpl implements CommandInterface {
+ 
   @override
   Future<void> init({
     required InitConfigModel config,
@@ -163,4 +163,5 @@ class CommandInterfaceImpl implements CommandInterface {
       }
     }
   }
+ 
 }

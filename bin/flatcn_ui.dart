@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:cli_dialog/cli_dialog.dart';
@@ -10,7 +11,7 @@ import 'injection_container.dart' as di;
 Future<void> main(List<String> arguments) async {
   await di.init();
 
-  final runner = CommandRunner('flatcn_ui', 'A Flutter UI components generator')
+  final runner = CommandRunner('flatcn_ui', 'A Flutter UI widgets library')
     ..addCommand(InitCommand());
 
   await runner.run(arguments);
@@ -28,6 +29,12 @@ class InitCommand extends Command {
 
   @override
   Future<void> run() async {
+
+    if (Directory('flatcn.config.json').existsSync()) {
+      print('Flatcn UI is already initialized');
+      return;
+    }
+
     final initUseCase = di.sl<InitUseCase>();
     final dialog = CLI_Dialog(
       questions: Questions.initCommandQuestions,
@@ -51,6 +58,7 @@ class InitCommand extends Command {
   }
 }
 
+// Implementation of the add command
 class AddCommand extends Command {
   @override
   String get description => "add new widgets";
