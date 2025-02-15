@@ -2,8 +2,8 @@ class Questions {
   Questions._();
 
   static const List<List<String>> initCommandQuestions = [
-    ['wich path do you choose for setup theme ?', 'theme_path'],
-    ['path to your widgets', 'widgets_path'],
+    ['Which path do you choose for setup theme ?', 'theme_path'],
+    ['Which path do you choose for widgets ?', 'widgets_path'],
   ];
 
   static const List<List<dynamic>> initCommandListQuestions = [
