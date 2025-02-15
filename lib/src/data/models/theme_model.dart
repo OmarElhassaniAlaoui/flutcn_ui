@@ -1,5 +1,5 @@
-import 'package:flatcn_ui/src/data/models/widget_file_model.dart';
-import 'package:flatcn_ui/src/domain/entities/theme_entity.dart';
+import 'package:flutcn_ui/src/data/models/widget_file_model.dart';
+import 'package:flutcn_ui/src/domain/entities/theme_entity.dart';
 
 class ThemeModel extends ThemeEntity {
   const ThemeModel({

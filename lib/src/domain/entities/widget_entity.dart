@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flatcn_ui/src/domain/entities/widget_file_entity.dart';
+import 'package:flutcn_ui/src/domain/entities/widget_file_entity.dart';
 
 class WidgetEntity extends Equatable {
   final String name;

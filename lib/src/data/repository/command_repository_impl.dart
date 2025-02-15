@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:flatcn_ui/src/domain/entities/init_config_entity.dart';
+import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 import '../../core/errors/failures.dart';
 import '../../domain/repository/command_repository.dart';
 import '../interfaces/command.dart';
@@ -11,7 +11,7 @@ class CommandRepositoryImpl implements CommandRepository {
 
   @override
   Future<Either<Failure, Unit>> initializeProject({
-   required InitConfigEntity config,
+    required InitConfigEntity config,
   }) async {
     try {
       await commandInterface.init(

@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:flatcn_ui/src/domain/entities/widget_file_entity.dart';
+import 'package:flutcn_ui/src/domain/entities/widget_file_entity.dart';
 
-class ThemeEntity extends Equatable  { 
-  final String name; 
+class ThemeEntity extends Equatable {
+  final String name;
   final String description;
   final String image;
   final String link;
@@ -16,6 +16,6 @@ class ThemeEntity extends Equatable  {
     required this.files,
   });
 
-  @override 
+  @override
   List<Object?> get props => [name, description, image, link, files];
 }

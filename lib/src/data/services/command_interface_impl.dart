@@ -1,17 +1,16 @@
 import 'dart:io';
-import 'package:flatcn_ui/src/core/constants/file_paths.dart';
-import 'package:flatcn_ui/src/data/models/init_config_model.dart';
+import 'package:flutcn_ui/src/core/constants/file_paths.dart';
+import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import '../interfaces/command.dart';
 import '../../core/errors/exceptions.dart';
 
 class CommandInterfaceImpl implements CommandInterface {
- 
   @override
   Future<void> init({
     required InitConfigModel config,
   }) async {
     try {
-      print('🚀 Initializing FlatCN UI...');
+      print('🚀 Initializing Flatcn UI...');
       // Create necessary directories
       await _createDirectory(
         config.themePath ?? 'lib/themes',
@@ -36,8 +35,6 @@ class CommandInterfaceImpl implements CommandInterface {
 
       switch (config.baseColor.toLowerCase()) {
         case 'zinc':
-          print('✅ Creating zinc theme file');
-          print(FilePaths.zincThemeFileContent);
           await _createTheme(
             themePath: config.themePath,
             paletteColors: FilePaths.zincThemeFileContent,
@@ -45,8 +42,6 @@ class CommandInterfaceImpl implements CommandInterface {
           );
           break;
         case 'slate':
-          print('✅ Creating slate theme file');
-
           await _createTheme(
             themePath: config.themePath,
             paletteColors: FilePaths.slateThemeFileContent,
@@ -54,7 +49,6 @@ class CommandInterfaceImpl implements CommandInterface {
           );
           break;
         case 'gray':
-          print('✅ Creating gray theme file');
           await _createTheme(
             themePath: config.themePath,
             paletteColors: FilePaths.grayThemeFileContent,
@@ -65,7 +59,22 @@ class CommandInterfaceImpl implements CommandInterface {
           await _createDefaultTheme();
       }
 
-      print('✅ Successfully initialized FlatCN UI');
+      switch (config.stateManagement.toLowerCase()) {
+        case 'bloc':
+          print('✅ Adding bloc dependencies to pubspec.yaml');
+          await _setupStateManagement(config);
+          break;
+        case 'provider':
+          print('✅ Adding provider dependencies to pubspec.yaml');
+          await _setupStateManagement(config);
+          break;
+        case 'riverpod':
+          print('✅ Adding riverpod dependencies to pubspec.yaml');
+          await _setupStateManagement(config);
+          break;
+      }
+
+      print('✅ Successfully initialized Flatcn UI');
     } catch (e) {
       throw InitializationException();
     }
@@ -163,5 +172,4 @@ class CommandInterfaceImpl implements CommandInterface {
       }
     }
   }
- 
 }

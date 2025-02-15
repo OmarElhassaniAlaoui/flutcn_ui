@@ -1,12 +1,14 @@
-name: flatcn_ui
+name: flutcn_ui
 description: A sample command-line application.
 version: 1.0.0
-repository: https://github.com/OmarElhassaniAlaoui/flatcn_ui.git
+repository: https://github.com/OmarElhassaniAlaoui/flutcn_ui
 environment:
   sdk: ^3.6.2
 
 # Add regular dependencies here.
 dependencies:
+  bloc: ^8.1.2
+
   args: ^2.6.0
   cli_dialog: ^0.5.0
   dartz: ^0.10.1

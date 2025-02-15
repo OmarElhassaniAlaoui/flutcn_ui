@@ -1,4 +1,4 @@
-import 'package:flatcn_ui/src/domain/entities/init_config_entity.dart';
+import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 
 class InitConfigModel extends InitConfigEntity {
   const InitConfigModel({
@@ -19,6 +19,7 @@ class InitConfigModel extends InitConfigEntity {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
         'themePath': themePath,
         'widgetsPath': widgetsPath,

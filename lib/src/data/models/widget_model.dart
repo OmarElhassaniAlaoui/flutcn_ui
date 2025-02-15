@@ -1,5 +1,5 @@
-import 'package:flatcn_ui/src/data/models/widget_file_model.dart';
-import 'package:flatcn_ui/src/domain/entities/widget_entity.dart';
+import 'package:flutcn_ui/src/data/models/widget_file_model.dart';
+import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 
 class WidgetModel extends WidgetEntity {
   const WidgetModel({
@@ -9,6 +9,4 @@ class WidgetModel extends WidgetEntity {
     required super.link,
     required List<WidgetFileModel> super.files,
   });
-
-
 }

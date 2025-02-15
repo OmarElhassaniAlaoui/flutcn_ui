@@ -1,5 +1,6 @@
-import 'package:flatcn_ui/src/data/models/init_config_model.dart';
+import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import 'package:cli_dialog/cli_dialog.dart';
+
 class GetUserAnswers {
   GetUserAnswers._();
 
@@ -11,12 +12,7 @@ class GetUserAnswers {
         'text',
         false // not required, will use default if empty
       ],
-      [
-        'Widgets path',
-        'lib/widgets',
-        'text',
-        false
-      ],
+      ['Widgets path', 'lib/widgets', 'text', false],
     ]);
 
     final answers = dialog.ask();
@@ -62,4 +58,4 @@ class GetUserAnswers {
       stateManagement: stateAnswer['State management'],
     );
   }
-} 
+}

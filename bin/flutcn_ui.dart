@@ -1,11 +1,10 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:cli_dialog/cli_dialog.dart';
-import 'package:flatcn_ui/src/core/constants/qestions.dart';
-import 'package:flatcn_ui/src/domain/entities/init_config_entity.dart';
-import 'package:flatcn_ui/src/domain/usecases/init_usecase.dart';
+import 'package:flutcn_ui/src/core/constants/qestions.dart';
+import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
+import 'package:flutcn_ui/src/domain/usecases/init_usecase.dart';
 import 'injection_container.dart' as di;
 
 Future<void> main(List<String> arguments) async {
@@ -29,7 +28,6 @@ class InitCommand extends Command {
 
   @override
   Future<void> run() async {
-
     if (Directory('flatcn.config.json').existsSync()) {
       print('Flatcn UI is already initialized');
       return;

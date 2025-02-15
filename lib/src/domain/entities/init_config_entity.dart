@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flatcn_ui/src/data/models/init_config_model.dart';
+import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 
 class InitConfigEntity extends Equatable {
   final String themePath;
@@ -42,8 +42,6 @@ class InitConfigEntity extends Equatable {
         'baseColor': baseColor,
         'stateManagement': stateManagement,
       };
-
-
 
   toModel() => InitConfigModel.fromJson(toJson());
 }

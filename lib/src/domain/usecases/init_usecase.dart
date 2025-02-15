@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:flatcn_ui/src/core/errors/failures.dart';
-import 'package:flatcn_ui/src/domain/entities/init_config_entity.dart';
-import 'package:flatcn_ui/src/domain/repository/command_repository.dart';
+import 'package:flutcn_ui/src/core/errors/failures.dart';
+import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
+import 'package:flutcn_ui/src/domain/repository/command_repository.dart';
 
 class InitUseCase {
   final CommandRepository repository;
