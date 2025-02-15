@@ -10,7 +10,7 @@ class CommandInterfaceImpl implements CommandInterface {
     required InitConfigModel config,
   }) async {
     try {
-      print('🚀 Initializing Flatcn UI...');
+
       // Create necessary directories
       await _createDirectory(
         config.themePath ?? 'lib/themes',
@@ -28,10 +28,6 @@ class CommandInterfaceImpl implements CommandInterface {
         config.stateManagement,
       );
 
-      print('✅ Created initial configuration file');
-      print("✅ Created widgets directory at ${config.widgetsPath}");
-      print("✅ Created themes directory at ${config.themePath}");
-      print("✅ Created style : ${config.baseColor}");
 
       switch (config.baseColor.toLowerCase()) {
         case 'zinc':
@@ -61,20 +57,16 @@ class CommandInterfaceImpl implements CommandInterface {
 
       switch (config.stateManagement.toLowerCase()) {
         case 'bloc':
-          print('✅ Adding bloc dependencies to pubspec.yaml');
           await _setupStateManagement(config);
           break;
         case 'provider':
-          print('✅ Adding provider dependencies to pubspec.yaml');
           await _setupStateManagement(config);
           break;
         case 'riverpod':
-          print('✅ Adding riverpod dependencies to pubspec.yaml');
           await _setupStateManagement(config);
           break;
       }
 
-      print('✅ Successfully initialized Flatcn UI');
     } catch (e) {
       throw InitializationException();
     }
@@ -121,7 +113,6 @@ class CommandInterfaceImpl implements CommandInterface {
     required String paletteColors,
     required String appTheme,
   }) async {
-    print('🎨 Creating theme file...');
     final appThemeFile = File('${themePath ?? 'lib/themes'}/app_theme.dart');
     final appPalleteFile =
         File('${themePath ?? 'lib/themes'}/app_pallete.dart');

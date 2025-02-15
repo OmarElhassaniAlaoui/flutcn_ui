@@ -1,11 +1,12 @@
 // Implementation of the actual command
 import 'dart:io';
+import 'package:io/ansi.dart';
 
 import 'package:args/command_runner.dart';
-import 'package:cli_dialog/cli_dialog.dart';
 import 'package:flutcn_ui/src/core/constants/qestions.dart';
 import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/init_usecase.dart';
+import 'package:prompts/prompts.dart' as prompts;
 import '../injection_container.dart' as di;
 
 class InitCommand extends Command {
@@ -25,18 +26,44 @@ class InitCommand extends Command {
     }
 
     final initUseCase = di.sl<InitUseCase>();
-    final dialog = CLI_Dialog(
-      questions: Questions.initCommandQuestions,
-      listQuestions: Questions.initCommandListQuestions,
+    final themePath = prompts.get(
+      Questions.initCommandQuestions['theme_path']!,
+      inputColor: cyan,
+      color: true,
+      defaultsTo: 'lib/themes',
     );
-    final answers = dialog.ask();
+    final widgetsPath = prompts.get(
+      Questions.initCommandQuestions['widgets_path']!,
+      defaultsTo: 'lib/widgets',
+      inputColor: cyan,
+      color: true,
+    );
+    final style = prompts.choose(
+      Questions.initCommandListQuestions['style']!['question']!,
+      Questions.initCommandListQuestions['style']!['options']!,
+      inputColor: cyan,
+      color: true,
+    );
+    final baseColor = prompts.choose(
+      Questions.initCommandListQuestions['base_color']!['question']!,
+      Questions.initCommandListQuestions['base_color']!['options']!,
+      inputColor: cyan,
+      color: true,
+    );
+    final stateManagement = prompts.choose(
+      Questions.initCommandListQuestions['state_management']!['question']!,
+      Questions.initCommandListQuestions['state_management']!['options']!,
+      inputColor: cyan,
+      color: true,
+    );
+
     final result = await initUseCase(
       config: InitConfigEntity(
-        themePath: answers['theme_path'],
-        widgetsPath: answers['widgets_path'],
-        style: answers['style'],
-        baseColor: answers['base_color'],
-        stateManagement: answers['state_management'],
+        themePath: themePath,
+        widgetsPath: widgetsPath,
+        style: style,
+        baseColor: baseColor,
+        stateManagement: stateManagement,
       ),
     );
 
