@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_dialog/cli_dialog.dart';
 import 'package:flutcn_ui/src/core/constants/qestions.dart';
@@ -10,10 +11,20 @@ import 'injection_container.dart' as di;
 Future<void> main(List<String> arguments) async {
   await di.init();
 
-  final runner = CommandRunner('flatcn_ui', 'A Flutter UI widgets library')
-    ..addCommand(InitCommand());
+  final parser = ArgParser()
+    ..addCommand('init')
+    ..addCommand('add');
 
-  await runner.run(arguments);
+  final results = parser.parse(arguments);
+
+  if (results.command?.name == 'init') {
+    await InitCommand().run();
+  } else if (results.command?.name == 'add') {
+    await AddCommand().run();
+  } else {
+    print('No command provided. Available commands: init, add');
+    print(parser.usage);
+  }
 }
 
 // Implementation of the actual command
@@ -22,14 +33,14 @@ class InitCommand extends Command {
   final name = 'init';
 
   @override
-  final description = 'Initialize FlatCN UI in your project';
+  final description = 'Initialize Flutcn UI in your project';
 
   InitCommand();
 
   @override
   Future<void> run() async {
     if (Directory('flatcn.config.json').existsSync()) {
-      print('Flatcn UI is already initialized');
+      print('Flutcn UI is already initialized');
       return;
     }
 
@@ -51,7 +62,8 @@ class InitCommand extends Command {
 
     result.fold(
       (failure) => print('Error: ${failure.message}'),
-      (_) => null, // Success message is handled in the interface implementation
+      (_) =>
+          print('\x1B[32m\u{2714} Flutcn UI initialized successfully!\x1B[0m'),
     );
   }
 }
@@ -68,6 +80,10 @@ class AddCommand extends Command {
 
   @override
   Future<void> run() async {
-    print("add command");
+    if (!Directory('flatcn.config.json').existsSync()) {
+      print(
+          'Flutcn UI is not initialized please run "dart run flutcn_ui init"');
+      return;
+    }
   }
 }
