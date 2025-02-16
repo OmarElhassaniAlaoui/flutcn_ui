@@ -22,4 +22,12 @@ class CommandRepositoryImpl implements CommandRepository {
       return Left(InitializationFailure());
     }
   }
+  
+  @override
+  Future<Either<Failure, Unit>> add({required String name, required String path}) {
+    // TODO: implement add
+    throw UnimplementedError();
+  }
+  
+  
 }

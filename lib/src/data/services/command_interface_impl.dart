@@ -89,14 +89,14 @@ class CommandInterfaceImpl implements CommandInterface {
     final file = File('flatcn.config.json');
     if (!file.existsSync()) {
       await file.writeAsString('''
-{
-  "widgetsPath": "$widgetsPaht",
-  "themePath": "$themePath",
-  "style": "${style ?? 'default'}",
-  "baseColor": "${baseColor ?? 'slate'}",
-  "stateManagement": "${stateManagement ?? 'bloc'}"
-}
-''');
+          {
+            "widgetsPath": "$widgetsPaht",
+            "themePath": "$themePath",
+            "style": "${style ?? 'default'}",
+            "baseColor": "${baseColor ?? 'slate'}",
+            "stateManagement": "${stateManagement ?? 'bloc'}"
+          }
+  ''');
     }
   }
 
@@ -125,6 +125,7 @@ class CommandInterfaceImpl implements CommandInterface {
   }
 
   Future<void> _setupStateManagement(InitConfigModel config) async {
+
     final pubspecFile = File('pubspec.yaml');
     if (pubspecFile.existsSync()) {
       var content = await pubspecFile.readAsString();
@@ -163,4 +164,12 @@ class CommandInterfaceImpl implements CommandInterface {
       }
     }
   }
+
+
+
+
+
+
+
+  
 }

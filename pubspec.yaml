@@ -8,6 +8,7 @@ environment:
 # Add regular dependencies here.
 dependencies:
   args: ^2.6.0
+  cli_spin: ^1.0.1
   dartz: ^0.10.1
   equatable: ^2.0.7
   get_it: ^8.0.3

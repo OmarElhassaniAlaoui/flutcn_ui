@@ -1,7 +1,7 @@
 // Implementation of the actual command
 import 'dart:io';
+import 'package:flutcn_ui/src/core/utils/highlighter.dart';
 import 'package:io/ansi.dart';
-
 import 'package:args/command_runner.dart';
 import 'package:flutcn_ui/src/core/constants/qestions.dart';
 import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
@@ -25,37 +25,32 @@ class InitCommand extends Command {
       return;
     }
 
-    final initUseCase = di.sl<InitUseCase>();
     final themePath = prompts.get(
       Questions.initCommandQuestions['theme_path']!,
-      inputColor: cyan,
-      color: true,
-      defaultsTo: 'lib/themes',
+      defaultsTo: 'lib/themes'.highlight('lib/themes', color: '\x1B[1m'),
     );
+
     final widgetsPath = prompts.get(
       Questions.initCommandQuestions['widgets_path']!,
-      defaultsTo: 'lib/widgets',
-      inputColor: cyan,
-      color: true,
+      defaultsTo: 'lib/widgets'.highlight('lib/widgets', color: '\x1B[1m'),
     );
+
     final style = prompts.choose(
       Questions.initCommandListQuestions['style']!['question']!,
       Questions.initCommandListQuestions['style']!['options']!,
-      inputColor: cyan,
-      color: true,
     );
+
     final baseColor = prompts.choose(
       Questions.initCommandListQuestions['base_color']!['question']!,
       Questions.initCommandListQuestions['base_color']!['options']!,
-      inputColor: cyan,
-      color: true,
     );
+
     final stateManagement = prompts.choose(
       Questions.initCommandListQuestions['state_management']!['question']!,
       Questions.initCommandListQuestions['state_management']!['options']!,
-      inputColor: cyan,
-      color: true,
     );
+
+    final initUseCase = di.sl<InitUseCase>();
 
     final result = await initUseCase(
       config: InitConfigEntity(
