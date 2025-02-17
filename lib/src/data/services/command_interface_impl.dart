@@ -15,10 +15,10 @@ class CommandInterfaceImpl implements CommandInterface {
     try {
       // Create necessary directories
       await _createDirectory(
-        config.themePath ?? 'lib/themes',
+        config.themePath,
       );
       await _createDirectory(
-        config.widgetsPath ?? 'lib/widgets',
+        config.widgetsPath ,
       );
 
       // Create initial configuration file

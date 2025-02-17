@@ -1,7 +1,5 @@
 // Implementation of the actual command
 import 'dart:io';
-import 'package:flutcn_ui/src/core/utils/highlighter.dart';
-import 'package:io/ansi.dart';
 import 'package:args/command_runner.dart';
 import 'package:flutcn_ui/src/core/constants/qestions.dart';
 import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
