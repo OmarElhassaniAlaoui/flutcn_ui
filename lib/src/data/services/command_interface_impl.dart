@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:flutcn_ui/src/core/constants/api_constants.dart';
 import 'package:flutcn_ui/src/core/constants/file_paths.dart';
 import 'package:flutcn_ui/src/data/models/init_config_model.dart';
+import 'package:flutcn_ui/src/data/models/widget_model.dart';
+import 'package:flutcn_ui/src/data/services/api_service.dart';
 import '../interfaces/command.dart';
 import '../../core/errors/exceptions.dart';
 
@@ -10,7 +13,6 @@ class CommandInterfaceImpl implements CommandInterface {
     required InitConfigModel config,
   }) async {
     try {
-
       // Create necessary directories
       await _createDirectory(
         config.themePath ?? 'lib/themes',
@@ -27,7 +29,6 @@ class CommandInterfaceImpl implements CommandInterface {
         config.baseColor,
         config.stateManagement,
       );
-
 
       switch (config.baseColor.toLowerCase()) {
         case 'zinc':
@@ -66,7 +67,6 @@ class CommandInterfaceImpl implements CommandInterface {
           await _setupStateManagement(config);
           break;
       }
-
     } catch (e) {
       throw InitializationException();
     }
@@ -125,7 +125,6 @@ class CommandInterfaceImpl implements CommandInterface {
   }
 
   Future<void> _setupStateManagement(InitConfigModel config) async {
-
     final pubspecFile = File('pubspec.yaml');
     if (pubspecFile.existsSync()) {
       var content = await pubspecFile.readAsString();
@@ -165,11 +164,15 @@ class CommandInterfaceImpl implements CommandInterface {
     }
   }
 
+  @override
+  Future<WidgetModel> add({required WidgetModel widget}) async { 
 
-
-
-
-
-
+    final apiService = HttpServiceImpl(baseUrl: ApiConstants.baseUrl);
+    final response = await apiService.post(
+      'widgets',
+      data: widget.toJson(),
+    );
+    return WidgetModel.fromJSON(response.body);
+  } 
   
 }

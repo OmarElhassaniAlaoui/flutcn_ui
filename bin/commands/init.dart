@@ -15,6 +15,8 @@ class InitCommand extends Command {
 
   @override
   final description = 'Initialize Flutcn UI in your project';
+   
+   
 
   InitCommand();
 
@@ -27,12 +29,12 @@ class InitCommand extends Command {
 
     final themePath = prompts.get(
       Questions.initCommandQuestions['theme_path']!,
-      defaultsTo: 'lib/themes'.highlight('lib/themes', color: '\x1B[1m'),
+      defaultsTo: 'lib/themes'
     );
 
     final widgetsPath = prompts.get(
       Questions.initCommandQuestions['widgets_path']!,
-      defaultsTo: 'lib/widgets'.highlight('lib/widgets', color: '\x1B[1m'),
+      defaultsTo: 'lib/widgets'
     );
 
     final style = prompts.choose(

@@ -1,5 +1,5 @@
 class ApiConstants {
   ApiConstants._(); // Private constructor to prevent instantiation
 
-  static const String baseUrl = 'https://flutcn.com/api/v1';
+  static const String baseUrl = 'http://localhost:3000/api/widgets/';
 }
