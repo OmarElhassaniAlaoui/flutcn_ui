@@ -1,4 +1,5 @@
 // bin/injection_container.dart
+import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutcn_ui/src/domain/usecases/init_usecase.dart';
 import 'package:flutcn_ui/src/data/repository/command_repository_impl.dart';
@@ -11,6 +12,7 @@ final sl = GetIt.instance;
 Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => InitUseCase(sl()));
+  sl.registerLazySingleton(() => AddUseCase(sl()));
 
   // Repository
   sl.registerLazySingleton<CommandRepository>(

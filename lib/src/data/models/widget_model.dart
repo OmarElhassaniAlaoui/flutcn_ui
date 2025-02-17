@@ -1,12 +1,26 @@
-import 'package:flutcn_ui/src/data/models/widget_file_model.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 
 class WidgetModel extends WidgetEntity {
   const WidgetModel({
     required super.name,
-    required super.description,
-    required super.image,
     required super.link,
-    required List<WidgetFileModel> super.files,
+    required super.files,
+    required super.path,
   });
+
+  factory WidgetModel.fromJSON(WidgetEntity entity) {
+    return WidgetModel(
+      name: entity.name,
+      link: entity.link,
+      files: entity.files,
+      path: entity.path,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'link': link,
+        'files': files,
+        'path': path,
+      };
 }
