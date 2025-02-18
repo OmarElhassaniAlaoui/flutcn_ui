@@ -1,10 +1,4 @@
-// lib/utils/spinner_helper.dart
 import 'package:cli_spin/cli_spin.dart';
-import 'package:io/ansi.dart';
-
-// lib/utils/spinner_helper.dart
-import 'package:cli_spin/cli_spin.dart';
-
 class SpinnerHelper {
   CliSpin? _spinner;
 
@@ -45,30 +39,3 @@ class SpinnerHelper {
     }
   }
 }
-// class SpinnerHelper {
-//   CliSpin? _spinner;
-
-//   void start(String message) {
-//     _spinner = CliSpin(
-//       text: message,
-//       spinner: CliSpinners.dots,
-//       color: CliSpinnerColor.green ,
-
-//     )..start();
-//   }
-
-//   void stop() {
-//     _spinner?.stop();
-//     _spinner = null;
-//   }
-
-//   void success(String message) {
-//     stop();
-//     print('\n✔ $message');
-//   }
-
-//   void error(String message) {
-//     stop();
-//     print('\n✖ $message');
-//   }
-// }
