@@ -1,13 +1,16 @@
 import 'dart:io';
-import 'package:flutcn_ui/src/core/constants/api_constants.dart';
 import 'package:flutcn_ui/src/core/constants/file_paths.dart';
+import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import 'package:flutcn_ui/src/data/models/widget_model.dart';
-import 'package:flutcn_ui/src/data/services/api_service.dart';
 import '../interfaces/command.dart';
 import '../../core/errors/exceptions.dart';
 
 class CommandInterfaceImpl implements CommandInterface {
+  final ApiService apiService;
+
+  CommandInterfaceImpl({required this.apiService});
+
   @override
   Future<void> init({
     required InitConfigModel config,
@@ -18,7 +21,7 @@ class CommandInterfaceImpl implements CommandInterface {
         config.themePath,
       );
       await _createDirectory(
-        config.widgetsPath ,
+        config.widgetsPath,
       );
 
       // Create initial configuration file
@@ -165,14 +168,17 @@ class CommandInterfaceImpl implements CommandInterface {
   }
 
   @override
-  Future<WidgetModel> add({required WidgetModel widget}) async { 
-
-    final apiService = HttpServiceImpl(baseUrl: ApiConstants.baseUrl);
-    final response = await apiService.post(
-      'widgets',
-      data: widget.toJson(),
+  Future<WidgetModel> add({required WidgetModel widget}) async {
+    final response = await apiService.get(
+      widget.link,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
     );
-    return WidgetModel.fromJSON(response.body);
-  } 
-  
+    return WidgetModel(
+      name: widget.name,
+      link: widget.link,
+      content: response.body.toString(),
+    );
+  }
 }

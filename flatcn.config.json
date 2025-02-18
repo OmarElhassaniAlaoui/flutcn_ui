@@ -1,0 +1,8 @@
+          {
+            "widgetsPath": "lib/widgets",
+            "themePath": "lib/themes",
+            "style": "New York",
+            "baseColor": "Zinc",
+            "stateManagement": "Bloc"
+          }
+  

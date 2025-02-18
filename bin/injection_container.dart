@@ -1,4 +1,5 @@
-// bin/injection_container.dart
+import 'package:flutcn_ui/src/core/services/api_service.dart';
+import 'package:flutcn_ui/src/data/services/api_service.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutcn_ui/src/domain/usecases/init_usecase.dart';
@@ -21,6 +22,11 @@ Future<void> init() async {
 
   // Data sources
   sl.registerLazySingleton<CommandInterface>(
-    () => CommandInterfaceImpl(),
+    () => CommandInterfaceImpl(
+      apiService: sl(),
+    ),
   );
+
+  sl.registerLazySingleton<ApiService>(
+      () => HttpServiceImpl(baseUrl: 'http://localhost:3000/api'));
 }

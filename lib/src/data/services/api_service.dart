@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
-import 'package:http/http.dart' as http; 
+import 'package:http/http.dart' as http;
 
 class HttpServiceImpl extends ApiService {
   final String baseUrl;
@@ -90,8 +90,17 @@ class HttpServiceImpl extends ApiService {
   }
 
   ApiResponse _httpToApiResponse(http.Response response) {
+    dynamic data;
+    final contentType = response.headers['content-type'];
+
+    if (contentType?.contains('application/json') == true) {
+      data = jsonDecode(response.body);
+    } else {
+      data = response.body;
+    }
+
     return ApiResponse(
-      jsonDecode(response.body),
+      data,
       response.statusCode,
       response.reasonPhrase,
     );

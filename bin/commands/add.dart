@@ -2,55 +2,88 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:args/command_runner.dart';
-
+import 'package:flutcn_ui/src/core/utils/spinners.dart';
+import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
+import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
+import '../injection_container.dart' as di;
 
 class AddCommand extends Command {
   @override
-  String get description => "add new widgets";
+  String get description => "Add new widgets";
 
   @override
   String get name => "add";
 
+  final SpinnerHelper _spinnerHelper =
+      SpinnerHelper(); // Create an instance of SpinnerHelper
+
   AddCommand() {
     argParser;
   }
+
   @override
   Future<void> run() async {
-    // Get the widget name from remaining arguments
-    final widgetName =
-        argResults?.rest.isEmpty == false ? argResults?.rest.first : null;
-
-    if (widgetName == null) {
-      print('Please specify a widget name: flatcn_ui add <widget-name>');
-      return;
-    }
-
-    if (!File('flatcn.config.json').existsSync()) {
-      print('Flutcn UI is not initialized. Please run "flatcn_ui init"');
-      return;
-    }
-
     try {
+      final widgetName =
+          argResults?.rest.isEmpty == false ? argResults?.rest.first : null;
+
+      if (widgetName == null) {
+        print('Please specify a widget name: flutcn_ui add <widget-name>');
+        return;
+      }
+
+      if (!File('flatcn.config.json').existsSync()) {
+        print('Flutcn UI is not initialized. Please run "flutcn_ui init"');
+        return;
+      }
+
       final File configFile = File('flatcn.config.json');
       final config = await configFile.readAsString();
       final Map<String, dynamic> configJson = jsonDecode(config);
       final widgetsPath = configJson['widgetsPath'];
 
-      print('Adding new $widgetName widget...');
+      final addUseCase = di.sl<AddUseCase>();
+      late WidgetEntity resultWidget;
 
-      // Uncomment and implement your widget creation logic here
-      // final addUseCase = di.sl<AddUseCase>();
-      // final widget = WidgetEntity(
-      //   name: widgetName,
-      //   type: widgetName,
-      //   path: '$widgetsPath/$widgetName',
-      // );
-      // await addUseCase.execute(widget);
+      // Fetch widget template with spinner
+      await _spinnerHelper.runWithSpinner(
+        message: 'Installing $widgetName widget',
+        action: () async {
+          final result = await addUseCase(
+            widget: WidgetEntity(
+              name: widgetName,
+              link: "http://localhost:3000/api/widgets/new-york/$widgetName",
+              content: '',
+            ),
+          );
+
+          resultWidget = result.fold(
+            (failure) => throw Exception(failure.message),
+            (widget) => widget,
+          );
+        },
+      );
+
+      // Create widget files with spinner
+      await _spinnerHelper.runWithSpinner(
+        message: "Creating widget file.",
+        action: () async {
+          final widgetDir = Directory('$widgetsPath/$widgetName');
+          if (!widgetDir.existsSync()) {
+            await widgetDir.create(recursive: true);
+          }
+
+          await File('$widgetsPath/$widgetName/widget.dart')
+              .writeAsString(resultWidget.content);
+        },
+      );
 
       print(
-          'Successfully added $widgetName widget to $widgetsPath/$widgetName');
-    } catch (e) {
-      print('Error adding widget: $e');
+          '\n✨ Successfully created $widgetName widget in $widgetsPath/$widgetName.dart');
+    } catch (e, stackTrace) {
+      print('\n❌ Error in AddCommand:');
+      print(e);
+      print(stackTrace);
     }
   }
 }
