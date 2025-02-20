@@ -45,10 +45,10 @@ class InitCommand extends Command {
       Questions.initCommandListQuestions['base_color']!['options']!,
     );
 
-    final stateManagement = prompts.choose(
-      Questions.initCommandListQuestions['state_management']!['question']!,
-      Questions.initCommandListQuestions['state_management']!['options']!,
-    );
+    // final stateManagement = prompts.choose(
+    //   Questions.initCommandListQuestions['state_management']!['question']!,
+    //   Questions.initCommandListQuestions['state_management']!['options']!,
+    // );
 
     final initUseCase = di.sl<InitUseCase>();
 
@@ -58,7 +58,7 @@ class InitCommand extends Command {
         widgetsPath: widgetsPath,
         style: style,
         baseColor: baseColor,
-        stateManagement: stateManagement,
+        // stateManagement: stateManagement,
       ),
     );
 

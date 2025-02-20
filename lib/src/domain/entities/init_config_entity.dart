@@ -6,14 +6,14 @@ class InitConfigEntity extends Equatable {
   final String widgetsPath;
   final String style;
   final String baseColor;
-  final String stateManagement;
+  // final String stateManagement;
 
   const InitConfigEntity({
     required this.themePath,
     required this.widgetsPath,
     required this.style,
     required this.baseColor,
-    required this.stateManagement,
+    // required this.stateManagement,
   });
 
   @override
@@ -22,7 +22,7 @@ class InitConfigEntity extends Equatable {
         widgetsPath,
         style,
         baseColor,
-        stateManagement,
+        // stateManagement,
       ];
 
   factory InitConfigEntity.fromJson(Map<String, dynamic> json) {
@@ -31,7 +31,7 @@ class InitConfigEntity extends Equatable {
       widgetsPath: json['widgetsPath'],
       style: json['style'],
       baseColor: json['baseColor'],
-      stateManagement: json['stateManagement'],
+      // stateManagement: json['stateManagement'],
     );
   }
 
@@ -40,7 +40,7 @@ class InitConfigEntity extends Equatable {
         'widgetsPath': widgetsPath,
         'style': style,
         'baseColor': baseColor,
-        'stateManagement': stateManagement,
+        // 'stateManagement': stateManagement,
       };
 
   toModel() => InitConfigModel.fromJson(toJson());
