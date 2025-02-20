@@ -4,23 +4,20 @@ class WidgetModel extends WidgetEntity {
   const WidgetModel({
     required super.name,
     required super.link,
-    required super.files,
-    required super.path,
+    required super.content,
   });
 
   factory WidgetModel.fromJSON(WidgetEntity entity) {
     return WidgetModel(
       name: entity.name,
       link: entity.link,
-      files: entity.files,
-      path: entity.path,
+      content: entity.content,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'link': link,
-        'files': files,
-        'path': path,
+        'content': content,
       };
 }

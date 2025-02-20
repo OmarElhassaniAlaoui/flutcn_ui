@@ -15,8 +15,8 @@ class Questions {
       "question":
           'Which ${"style".highlight("style", color: '\x1B[36m')} do you want to use?',
       "options": [
-        "New York",
-        "Default",
+        "new-york",
+        "default",
       ]
     },
     'base_color': {

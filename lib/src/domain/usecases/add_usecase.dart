@@ -11,13 +11,6 @@ class AddUseCase {
   Future<Either<Failure, WidgetEntity>> call({
     required WidgetEntity widget,
   }) async {
-    try {
-      await repository.add(
-        widget: widget,
-      );
-      return Right(widget);
-    } catch (e) {
-      return Left(GenericFailure(message: e.toString()));
-    }
+    return await repository.add(widget: widget);
   }
 }

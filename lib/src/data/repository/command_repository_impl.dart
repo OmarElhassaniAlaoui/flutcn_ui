@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutcn_ui/src/data/models/widget_model.dart';
 import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 import '../../core/errors/failures.dart';
@@ -23,18 +24,17 @@ class CommandRepositoryImpl implements CommandRepository {
       return Left(InitializationFailure());
     }
   }
-  
+
   @override
-  Future<Either<Failure, WidgetEntity>> add({required WidgetEntity widget})async {
+  Future<Either<Failure, WidgetEntity>> add(
+      {required WidgetEntity widget}) async {
     try {
-      await commandInterface.add(
+      WidgetModel result = await commandInterface.add(
         widget: widget.toModel(),
       );
-      return Right(widget);
+      return Right(result); 
     } catch (e) {
       return Left(GenericFailure(message: e.toString()));
     }
   }
-  
-  
 }
