@@ -90,14 +90,14 @@ class CommandInterfaceImpl implements CommandInterface {
     String? baseColor,
     // String? stateManagement,
   ) async {
-    final file = File('flatcn.config.json');
+    final file = File('flutcn.config.json');
     if (!file.existsSync()) {
       await file.writeAsString('''
           {
             "widgetsPath": "$widgetsPaht",
             "themePath": "$themePath",
             "style": "${style ?? 'default'}",
-            "baseColor": "${baseColor ?? 'slate'}", 
+            "baseColor": "${baseColor ?? 'slate'}"
           }
   ''');
     }
