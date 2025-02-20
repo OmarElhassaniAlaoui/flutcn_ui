@@ -6,7 +6,7 @@ class InitConfigModel extends InitConfigEntity {
     required super.widgetsPath,
     required super.style,
     required super.baseColor,
-    required super.stateManagement,
+    // required super.stateManagement,
   });
 
   factory InitConfigModel.fromJson(Map<String, dynamic> json) {
@@ -15,7 +15,7 @@ class InitConfigModel extends InitConfigEntity {
       widgetsPath: json['widgetsPath'],
       style: json['style'],
       baseColor: json['baseColor'],
-      stateManagement: json['stateManagement'],
+      // stateManagement: json['stateManagement'],
     );
   }
 
@@ -25,6 +25,6 @@ class InitConfigModel extends InitConfigEntity {
         'widgetsPath': widgetsPath,
         'style': style,
         'baseColor': baseColor,
-        'stateManagement': stateManagement,
+        // 'stateManagement': stateManagement,
       };
 }
