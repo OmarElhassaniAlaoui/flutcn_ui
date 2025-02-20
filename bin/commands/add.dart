@@ -1,4 +1,3 @@
-// Implementation of the add command
 import 'dart:convert';
 import 'dart:io';
 import 'package:args/command_runner.dart';
@@ -14,8 +13,7 @@ class AddCommand extends Command {
   @override
   String get name => "add";
 
-  final SpinnerHelper _spinnerHelper =
-      SpinnerHelper(); // Create an instance of SpinnerHelper
+  final SpinnerHelper _spinnerHelper = SpinnerHelper(); 
 
   AddCommand() {
     argParser;
@@ -41,6 +39,7 @@ class AddCommand extends Command {
       final config = await configFile.readAsString();
       final Map<String, dynamic> configJson = jsonDecode(config);
       final widgetsPath = configJson['widgetsPath'];
+      final style = configJson['style'];
 
       final addUseCase = di.sl<AddUseCase>();
       late WidgetEntity resultWidget;
@@ -52,7 +51,7 @@ class AddCommand extends Command {
           final result = await addUseCase(
             widget: WidgetEntity(
               name: widgetName,
-              link: "http://localhost:3000/api/widgets/new-york/$widgetName",
+              link: "http://localhost:3000/api/widgets/$style/$widgetName",
               content: '',
             ),
           );
@@ -68,13 +67,12 @@ class AddCommand extends Command {
       await _spinnerHelper.runWithSpinner(
         message: "Creating widget file.",
         action: () async {
-          final widgetDir = Directory('$widgetsPath/$widgetName');
+          final widgetDir = Directory('$widgetsPath');
           if (!widgetDir.existsSync()) {
             await widgetDir.create(recursive: true);
           }
-
-          await File('$widgetsPath/$widgetName/widget.dart')
-              .writeAsString(resultWidget.content);
+          final widgetFilePath = '$widgetsPath/$widgetName.dart';
+          await File(widgetFilePath).writeAsString(resultWidget.content);
         },
       );
 
