@@ -1,4 +1,4 @@
-# flatcn_ui
+# flutcn_ui
 
 A modular and customizable UI component library for Flutter, inspired by Shadcn UI.
 
@@ -10,11 +10,11 @@ A modular and customizable UI component library for Flutter, inspired by Shadcn 
 
 ## Installation
 
-To install the `flatcn_ui` CLI tool, add it as a dev dependency in your `pubspec.yaml` file:
+To install the `flutcn_ui` CLI tool, add it as a dev dependency in your `pubspec.yaml` file:
 
 ```yaml
 dev_dependencies:
-  flatcn_ui: ^1.0.0
+  flutcn_ui: ^1.0.0
 ```
 
 Then, run:
@@ -27,22 +27,22 @@ dart pub get
 
 ### Initialize the Project
 
-Run the following command to initialize `flatcn_ui` in your project:
+Run the following command to initialize `flutcn_ui` in your project:
 
 ```bash
-dart run flatcn_ui init
+dart run flutcn_ui init
 ```
 
 Options:
 - `--theme`: Specify the theme (e.g., `material`, `custom`).
-- `--path`: Specify the directory for components (default: `lib/flatcn_ui`).
+- `--path`: Specify the directory for components (default: `lib/flutcn_ui`).
 
 ### Add a Component
 
 To add a component, use the `add` command:
 
 ```bash
-dart run flatcn_ui add <component_name>
+dart run flutcn_ui add <component_name>
 ```
 
 Options:
@@ -54,7 +54,7 @@ Options:
 To list all available components, use the `list` command:
 
 ```bash
-dart run flatcn_ui list
+dart run flutcn_ui list
 ```
 
 ### Update Components
@@ -62,19 +62,19 @@ dart run flatcn_ui list
 To update components to the latest version, use the `update` command:
 
 ```bash
-dart run flatcn_ui update
+dart run flutcn_ui update
 ```
 
 ## Configuration File
 
-The `.flatcn_ui_config` file stores the project configuration. It is created when you run `flatcn_ui init`.
+The `.flutcn_ui_config` file stores the project configuration. It is created when you run `flutcn_ui init`.
 
 Example:
 
 ```json
 {
   "theme": "material",
-  "path": "lib/flatcn_ui"
+  "path": "lib/flutcn_ui"
 }
 ```
 
@@ -82,7 +82,7 @@ Example:
 
 ### Missing Configuration File
 
-If you see the error `flatcn_ui is not initialized`, run `flatcn_ui init` to create the configuration file.
+If you see the error `flutcn_ui is not initialized`, run `flutcn_ui init` to create the configuration file.
 
 ### Component Not Found
 
@@ -104,7 +104,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ### Added
 
-- Initial release of `flatcn_ui` CLI tool.
+- Initial release of `flutcn_ui` CLI tool.
 - Commands: `init`, `add`, `list`, `update`.
 - Modular components: Button, Text Input, Card, List.
 
