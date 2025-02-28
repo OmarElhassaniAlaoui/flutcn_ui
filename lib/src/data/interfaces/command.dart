@@ -9,5 +9,4 @@ abstract class CommandInterface {
   Future<WidgetModel> add({
     required  WidgetModel widget,
   });
-
 }
