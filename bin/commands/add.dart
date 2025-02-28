@@ -13,7 +13,7 @@ class AddCommand extends Command {
   @override
   String get name => "add";
 
-  final SpinnerHelper _spinnerHelper = SpinnerHelper(); 
+  final SpinnerHelper _spinnerHelper = SpinnerHelper();
 
   AddCommand() {
     argParser;
@@ -30,12 +30,12 @@ class AddCommand extends Command {
         return;
       }
 
-      if (!File('flatcn.config.json').existsSync()) {
+      if (!File('flutcn.config.json').existsSync()) {
         print('Flutcn UI is not initialized. Please run "flutcn_ui init"');
         return;
       }
 
-      final File configFile = File('flatcn.config.json');
+      final File configFile = File('flutcn.config.json');
       final config = await configFile.readAsString();
       final Map<String, dynamic> configJson = jsonDecode(config);
       final widgetsPath = configJson['widgetsPath'];
