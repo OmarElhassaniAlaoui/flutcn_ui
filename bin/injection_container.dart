@@ -28,5 +28,5 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<ApiService>(
-      () => HttpServiceImpl(baseUrl: 'http://localhost:3000/api'));
+      () => HttpServiceImpl(baseUrl: 'http://localhost:3000/registry'));
 }
