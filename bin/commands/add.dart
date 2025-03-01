@@ -51,7 +51,7 @@ class AddCommand extends Command {
           final result = await addUseCase(
             widget: WidgetEntity(
               name: widgetName,
-              link: "http://localhost:3000/api/widgets/$style/$widgetName",
+              link: "http://localhost:3000/registry/widgets/$style/$widgetName",
               content: '',
             ),
           );

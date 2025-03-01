@@ -13,27 +13,22 @@ class InitCommand extends Command {
 
   @override
   final description = 'Initialize Flutcn UI in your project';
-   
-   
 
   InitCommand();
 
   @override
   Future<void> run() async {
-    if (Directory('flatcn.config.json').existsSync()) {
+    if (Directory('flutcn.config.json').existsSync()) {
       print('Flutcn UI is already initialized');
       return;
     }
 
-    final themePath = prompts.get(
-      Questions.initCommandQuestions['theme_path']!,
-      defaultsTo: 'lib/themes'
-    );
+    final themePath = prompts.get(Questions.initCommandQuestions['theme_path']!,
+        defaultsTo: 'lib/themes');
 
     final widgetsPath = prompts.get(
-      Questions.initCommandQuestions['widgets_path']!,
-      defaultsTo: 'lib/widgets'
-    );
+        Questions.initCommandQuestions['widgets_path']!,
+        defaultsTo: 'lib/widgets');
 
     final style = prompts.choose(
       Questions.initCommandListQuestions['style']!['question']!,
