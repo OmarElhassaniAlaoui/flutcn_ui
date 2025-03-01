@@ -14,12 +14,42 @@ class InitCommand extends Command {
   @override
   final description = 'Initialize Flutcn UI in your project';
 
-  InitCommand();
-
+  InitCommand() {
+    argParser.addFlag(
+      'default',
+      abbr: 'd',
+      help:
+          'Initialize flutcn ui with default config lib/themes and lib/widgets and default style',
+    );
+  }
   @override
   Future<void> run() async {
+    final initUseCase = di.sl<InitUseCase>();
+
     if (Directory('flutcn.config.json').existsSync()) {
       print('Flutcn UI is already initialized');
+      return;
+    }
+
+    if (argResults?.wasParsed('default') == true) {
+      try {
+        final result = await initUseCase(
+          config: InitConfigEntity(
+            themePath: 'lib/themes',
+            widgetsPath: 'lib/widgets',
+            style: 'new-york',
+            baseColor: 'Zinc',
+            // stateManagement: stateManagement,
+          ),
+        );
+        result.fold(
+          (failure) => print('Error: ${failure.message}'),
+          (_) => print(
+              '\x1B[32m\u{2714} Flutcn UI initialized successfully!\x1B[0m'),
+        );
+      } catch (e) {
+        print('Error: $e');
+      }
       return;
     }
 
@@ -40,12 +70,12 @@ class InitCommand extends Command {
       Questions.initCommandListQuestions['base_color']!['options']!,
     );
 
+    // TODO: Add state management question later
+
     // final stateManagement = prompts.choose(
     //   Questions.initCommandListQuestions['state_management']!['question']!,
     //   Questions.initCommandListQuestions['state_management']!['options']!,
     // );
-
-    final initUseCase = di.sl<InitUseCase>();
 
     final result = await initUseCase(
       config: InitConfigEntity(
