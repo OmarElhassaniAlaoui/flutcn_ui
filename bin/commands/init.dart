@@ -22,6 +22,7 @@ class InitCommand extends Command {
           'Initialize flutcn ui with default config lib/themes and lib/widgets and default style',
     );
   }
+
   @override
   Future<void> run() async {
     final initUseCase = di.sl<InitUseCase>();
@@ -52,6 +53,7 @@ class InitCommand extends Command {
       }
       return;
     }
+    final appName = await getAppName();
 
     final themePath = prompts.get(Questions.initCommandQuestions['theme_path']!,
         defaultsTo: 'lib/themes');
@@ -93,4 +95,28 @@ class InitCommand extends Command {
           print('\x1B[32m\u{2714} Flutcn UI initialized successfully!\x1B[0m'),
     );
   }
+}
+
+Future<String?> getAppName() async {
+  try {
+    // Read the pubspec.yaml file
+    final pubspecFile = File('pubspec.yaml');
+    // Check if file exists
+    if (!pubspecFile.existsSync()) {
+      print('pubspec.yaml file not found');
+      return null;
+    }
+
+    // Read the file content
+    final pubspecContent = await pubspecFile.readAsString();
+    // Find the line containing 'name:'
+    final nameLine =
+        pubspecContent.split('\n').firstWhere((line) => line.contains('name:'));
+    // Extract the name from the line
+    final name = nameLine.split(':')[1].trim();
+    return name;
+  } catch (e) {
+    print("Error reading pubspec.yaml: $e");
+  }
+  return null;
 }
