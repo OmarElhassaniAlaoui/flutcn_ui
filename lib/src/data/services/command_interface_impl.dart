@@ -5,12 +5,13 @@ import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import 'package:flutcn_ui/src/data/models/widget_model.dart';
 import '../interfaces/command.dart';
 import '../../core/errors/exceptions.dart';
+import 'package:flutcn_ui/src/core/utils/spinners.dart';
 
 class CommandInterfaceImpl implements CommandInterface {
   final ApiService apiService;
 
   CommandInterfaceImpl({required this.apiService});
-
+  final SpinnerHelper _spinnerHelper = SpinnerHelper();
   @override
   Future<void> init({
     required InitConfigModel config,
@@ -33,143 +34,11 @@ class CommandInterfaceImpl implements CommandInterface {
         // config.stateManagement,
       );
 
-      switch (config.baseColor.toLowerCase()) {
-        case 'zinc':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.zincThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'slate':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.slateThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'gray':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.grayThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'red':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.redThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'rose':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.roseThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'pink':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.pinkThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'purple':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.purpleThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'violet':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.violetThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'indigo':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.indigoThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'blue':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.blueThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'sky':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.skyThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'cyan':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.cyanThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'teal':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.tealThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'emerald':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.emeraldThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'green':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.greenThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'lime':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.limeThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'yellow':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.yellowThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'amber':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.amberThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        case 'orange':
-          await _createTheme(
-            themePath: config.themePath,
-            paletteColors: FilePaths.orangeThemeFileContent,
-            appTheme: FilePaths.newYorkThemeFileContent,
-          );
-          break;
-        default:
-          await _createDefaultTheme();
-      }
+      await _fetchAndCreateTheme(
+        themePath: config.themePath,
+        style: config.style,
+        baseColor: config.baseColor.toLowerCase(),
+      );
 
       // TODO: Add state management
       // switch (config.stateManagement.toLowerCase()) {
@@ -183,6 +52,7 @@ class CommandInterfaceImpl implements CommandInterface {
       //     await _setupStateManagement(config);
       //     break;
       // }
+      
     } catch (e) {
       throw InitializationException();
     }
@@ -215,6 +85,55 @@ class CommandInterfaceImpl implements CommandInterface {
     }
   }
 
+  Future<void> _fetchAndCreateTheme({
+    required String themePath,
+    required String style,
+    required String baseColor,
+  }) async {
+    const String baseUrl = 'http://localhost:3000/registry';
+    // Use spinner to indicate theme fetching
+    await _spinnerHelper.runWithSpinner(
+      message: 'Fetching theme files',
+      action: () async {
+        try {
+          // Fetch palette colors from API
+          final paletteResponse = await apiService.get(
+            '$baseUrl/colorScheme/$style/$baseColor', // e.g., themes/new-york/zinc/palette
+            headers: {'Content-Type': 'text/plain'},
+          );
+
+          print(paletteResponse.body);
+
+          // Fetch theme definition from API
+          final themeResponse = await apiService.get(
+            '$baseUrl/theme/$style', // e.g., themes/new-york/zinc/theme
+            headers: {'Content-Type': 'text/plain'},
+          );
+
+          print(themeResponse.body);
+
+          if (paletteResponse.status != 200 || themeResponse.status != 200) {
+            throw ServerException(
+                message:
+                    'Failed to fetch theme from API: Palette(${paletteResponse.status}), Theme(${themeResponse.status})');
+          }
+
+          final appThemeFile = File('$themePath/app_theme.dart');
+          final appPaletteFile = File('$themePath/app_pallete.dart');
+
+          if (!appThemeFile.existsSync()) {
+            await appThemeFile.create(recursive: true);
+            await appPaletteFile.create(recursive: true);
+            await appThemeFile.writeAsString(themeResponse.body.toString());
+            await appPaletteFile.writeAsString(paletteResponse.body.toString());
+          }
+        } catch (e) {
+          throw ServerException(message: 'Error fetching theme: $e');
+        }
+      },
+    );
+  }
+
   Future<void> _createDefaultTheme() async {
     final file = File('lib/themes/default_theme.dart');
     if (!file.existsSync()) {
@@ -223,21 +142,24 @@ class CommandInterfaceImpl implements CommandInterface {
     }
   }
 
-  Future<void> _createTheme({
-    String? themePath,
-    required String paletteColors,
-    required String appTheme,
-  }) async {
-    final appThemeFile = File('${themePath ?? 'lib/themes'}/app_theme.dart');
-    final appPalleteFile =
-        File('${themePath ?? 'lib/themes'}/app_pallete.dart');
-    if (!appThemeFile.existsSync()) {
-      await appThemeFile.create(recursive: true);
-      await appPalleteFile.create(recursive: true);
-      await appThemeFile.writeAsString(appTheme);
-      await appPalleteFile.writeAsString(paletteColors);
-    }
-  }
+  // Future<void> _createTheme({
+  //   String? themePath,
+  //   required String paletteColors,
+  //   required String appTheme,
+  // }) async {
+  //   final appThemeFile = File('${themePath ?? 'lib/themes'}/app_theme.dart');
+  //   final appPalleteFile =
+  //       File('${themePath ?? 'lib/themes'}/app_pallete.dart');
+  //   if (!appThemeFile.existsSync()) {
+  //     await appThemeFile.create(recursive: true);
+  //     await appPalleteFile.create(recursive: true);
+  //     await appThemeFile.writeAsString(appTheme);
+  //     await appPalleteFile.writeAsString(paletteColors);
+  //   }
+  // }
+
+
+
   // NOTE: we don't need this for now
 
   // Future<void> _setupStateManagement(InitConfigModel config) async {
