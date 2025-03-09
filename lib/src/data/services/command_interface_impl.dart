@@ -52,7 +52,7 @@ class CommandInterfaceImpl implements CommandInterface {
       //     await _setupStateManagement(config);
       //     break;
       // }
-      
+
     } catch (e) {
       throw InitializationException();
     }
@@ -102,7 +102,6 @@ class CommandInterfaceImpl implements CommandInterface {
             headers: {'Content-Type': 'text/plain'},
           );
 
-          print(paletteResponse.body);
 
           // Fetch theme definition from API
           final themeResponse = await apiService.get(
@@ -110,7 +109,6 @@ class CommandInterfaceImpl implements CommandInterface {
             headers: {'Content-Type': 'text/plain'},
           );
 
-          print(themeResponse.body);
 
           if (paletteResponse.status != 200 || themeResponse.status != 200) {
             throw ServerException(
