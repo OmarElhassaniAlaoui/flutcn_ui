@@ -100,7 +100,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 # Changelog
 
-## [1.0.0] - 2023-10-01
+## [1.0.0] - 2024-10-01
 
 ### Added
 
