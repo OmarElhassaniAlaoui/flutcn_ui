@@ -4,7 +4,7 @@ import './app_pallete.dart';
 // Enum for all available color schemes
 
 
-class ShadcnTheme {
+class FlutcnTheme {
   // Default border radius values
   static const double _radiusSmall = 4.0;
   static const double _radiusDefault = 8.0;
