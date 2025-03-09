@@ -1,4 +1,5 @@
 import 'package:cli_spin/cli_spin.dart';
+
 class SpinnerHelper {
   CliSpin? _spinner;
 
@@ -7,8 +8,7 @@ class SpinnerHelper {
     _spinner = CliSpin(
       text: message,
       spinner: CliSpinners.dots,
-      color: CliSpinnerColor.green ,
-
+      color: CliSpinnerColor.green,
     )..start();
   }
 
@@ -22,17 +22,23 @@ class SpinnerHelper {
   void error(String message) {
     _spinner?.stop();
     print('\x1B[31m \u{274C} \x1B[0m $message');
-  }
+  } 
+
+  
 
   /// Runs an asynchronous action with a spinner
   Future<void> runWithSpinner({
     required String message,
     required Future<void> Function() action,
+    String? onFinish,
   }) async {
     start(message);
     try {
       await action();
       success(message);
+      if (onFinish != null) {
+        success(onFinish);
+      }
     } catch (e) {
       error('$message: $e');
       rethrow;

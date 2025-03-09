@@ -52,8 +52,8 @@ class InitCommand extends Command {
         print('Error: $e');
       }
       return;
-    } 
-    
+    }
+
     // final appName = await getAppName();
 
     final themePath = prompts.get(Questions.initCommandQuestions['theme_path']!,
@@ -73,6 +73,12 @@ class InitCommand extends Command {
       Questions.initCommandListQuestions['base_color']!['options']!,
     );
 
+    // Prompt user for google_fonts installation
+    final installGoogleFonts = prompts.getBool(
+      'The theme uses Google Fonts. Do you want to add the google_fonts package to your pubspec.yaml?',
+      defaultsTo: true,
+    );
+
     // TODO: Add state management question later
 
     // final stateManagement = prompts.choose(
@@ -86,6 +92,7 @@ class InitCommand extends Command {
         widgetsPath: widgetsPath,
         style: style,
         baseColor: baseColor,
+        installGoogleFonts: installGoogleFonts , 
         // stateManagement: stateManagement,
       ),
     );

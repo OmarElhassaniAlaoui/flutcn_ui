@@ -6,6 +6,7 @@ class InitConfigModel extends InitConfigEntity {
     required super.widgetsPath,
     required super.style,
     required super.baseColor,
+    required super.installGoogleFonts,
     // required super.stateManagement,
   });
 
@@ -15,6 +16,7 @@ class InitConfigModel extends InitConfigEntity {
       widgetsPath: json['widgetsPath'],
       style: json['style'],
       baseColor: json['baseColor'],
+      installGoogleFonts: json['installGoogleFonts'] ?? false,
       // stateManagement: json['stateManagement'],
     );
   }
@@ -25,6 +27,7 @@ class InitConfigModel extends InitConfigEntity {
         'widgetsPath': widgetsPath,
         'style': style,
         'baseColor': baseColor,
+        'installGoogleFonts': installGoogleFonts,
         // 'stateManagement': stateManagement,
       };
 }

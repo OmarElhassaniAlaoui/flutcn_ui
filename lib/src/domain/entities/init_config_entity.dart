@@ -6,6 +6,7 @@ class InitConfigEntity extends Equatable {
   final String widgetsPath;
   final String style;
   final String baseColor;
+  final bool installGoogleFonts;
   // final String stateManagement;
 
   const InitConfigEntity({
@@ -13,6 +14,7 @@ class InitConfigEntity extends Equatable {
     required this.widgetsPath,
     required this.style,
     required this.baseColor,
+    this.installGoogleFonts = false,
     // required this.stateManagement,
   });
 
@@ -22,6 +24,7 @@ class InitConfigEntity extends Equatable {
         widgetsPath,
         style,
         baseColor,
+        installGoogleFonts,
         // stateManagement,
       ];
 
@@ -31,6 +34,7 @@ class InitConfigEntity extends Equatable {
       widgetsPath: json['widgetsPath'],
       style: json['style'],
       baseColor: json['baseColor'],
+      installGoogleFonts: json['installGoogleFonts']??false,
       // stateManagement: json['stateManagement'],
     );
   }
@@ -40,6 +44,7 @@ class InitConfigEntity extends Equatable {
         'widgetsPath': widgetsPath,
         'style': style,
         'baseColor': baseColor,
+        'installGoogleFonts': installGoogleFonts,
         // 'stateManagement': stateManagement,
       };
 
