@@ -1,112 +1,187 @@
-# flutcn_ui
 
-A modular and customizable UI component library for Flutter, inspired by Shadcn UI.
+---
+
+# Flutcn UI CLI
+
+![Dart](https://img.shields.io/badge/Dart-3.6.2-blue.svg) ![License](https://img.shields.io/badge/License-MIT-green.svg) ![GitHub](https://img.shields.io/github/stars/OmarElhassaniAlaoui/flutcn_ui)
+
+**Flutcn UI** is a command-line interface (CLI) tool designed to streamline Flutter development by automating the setup of UI themes and the addition of pre-defined widgets. It integrates with your Flutter project to provide a consistent design system, leveraging customizable themes and a widget registry.
 
 ## Features
 
-- **Modular Components**: Import only the components you need.
-- **Customizable**: Easily customize components to fit your design system.
-- **Lightweight**: Optimized for performance and minimal bundle size.
+- **Project Initialization**: Set up your Flutter project with a theme directory, widget directory, and configuration file.
+- **Widget Addition**: Fetch and add pre-built widgets from a registry to your project.
+- **Customizable Themes**: Choose from base color palettes (e.g., Zinc, Slate, Gray) and styles (e.g., New York).
+- **User-Friendly**: Interactive prompts and spinners for a smooth CLI experience.
+
+## Prerequisites
+
+- **Dart SDK**: Version 3.6.2 or higher.
+- **Flutter**: Installed and configured (required for Flutter projects where the CLI is used).
 
 ## Installation
 
-To install the `flutcn_ui` CLI tool, add it as a dev dependency in your `pubspec.yaml` file:
+### From Source
 
-```yaml
-dev_dependencies:
-  flutcn_ui: ^1.0.0
-```
-
-Then, run:
+Clone the repository and install locally:
 
 ```bash
+git clone https://github.com/OmarElhassaniAlaoui/flutcn_ui.git
+cd flutcn_ui
 dart pub get
+dart pub global activate --source path .
 ```
+
+### From Pub (Not Published Yet)
+
+Once published to Dart Pub, install globally with:
+
+```bash
+dart pub global activate flutcn_ui
+```
+
+Ensure the Dart `pub` cache bin directory (e.g., `~/.pub-cache/bin`) is in your system's PATH.
 
 ## Usage
 
-### Initialize the Project
+Run `flutcn_ui` commands from the root of your Flutter project (where `pubspec.yaml` exists).
 
-Run the following command to initialize `flutcn_ui` in your project:
+### Initialize a Project
 
-```bash
-dart run flutcn_ui init
-```
-
-Options:
-- `--theme`: Specify the theme (e.g., `material`, `custom`).
-- `--path`: Specify the directory for components (default: `lib/flutcn_ui`).
-
-### Add a Component
-
-To add a component, use the `add` command:
+Set up Flutcn UI in your project:
 
 ```bash
-dart run flutcn_ui add <component_name>
+flutcn_ui init [--default]
 ```
 
-Options:
-- `--variant`: Specify the component variant (e.g., `primary`, `secondary`).
-- `--path`: Override the default component path.
+- **Without `--default`**: Prompts for:
+  - **Theme Path**: Where theme files are stored (default: `lib/themes`).
+  - **Widgets Path**: Where widget files are stored (default: `lib/widgets`).
+  - **Style**: UI style (options: `new-york`, `default`).
+  - **Base Color**: Color palette (options: `zinc`, `slate`, `gray`, etc.).
+- **With `--default`**: Uses defaults:
+  - Theme Path: `lib/themes`
+  - Widgets Path: `lib/widgets`
+  - Style: `new-york`
+  - Base Color: `zinc`
 
-### List Available Components
+**Output**:
+- Creates `lib/themes/app_pallete.dart` and `lib/themes/app_theme.dart` with the selected palette and theme.
+- Creates a `flutcn.config.json` file in the project root.
 
-To list all available components, use the `list` command:
+**Example**:
+```bash
+flutcn_ui init
+# Follow prompts to configure
+```
 
 ```bash
-dart run flutcn_ui list
+flutcn_ui init --default
+# Uses default settings
 ```
 
-### Update Components
+### Add a Widget
 
-To update components to the latest version, use the `update` command:
+Add a widget from the registry:
 
 ```bash
-dart run flutcn_ui update
+flutcn_ui add <widget-name>
 ```
 
-## Configuration File
+- **Requirements**: `flutcn.config.json` must exist (run `init` first).
+- **Behavior**: Fetches the widget template (e.g., `button`) based on the style in `flutcn.config.json` and saves it to the widgets path (e.g., `lib/widgets/button.dart`).
 
-The `.flutcn_ui_config` file stores the project configuration. It is created when you run `flutcn_ui init`.
+**Example**:
+```bash
+flutcn_ui add button
+# Adds lib/widgets/button.dart
+```
 
-Example:
+## Configuration
+
+The `flutcn.config.json` file is generated during `init` and contains:
 
 ```json
 {
-  "theme": "material",
-  "path": "lib/flutcn_ui"
+  "widgetsPath": "lib/widgets",
+  "themePath": "lib/themes",
+  "style": "new-york",
+  "baseColor": "zinc"
 }
 ```
 
+Edit this file manually to adjust paths or style, though re-running `init` is recommended for consistency.
+
+## Dependencies
+
+The generated theme (`app_theme.dart`) uses the `google_fonts` package. Add it to your Flutter project’s `pubspec.yaml`:
+
+```yaml
+dependencies:
+  google_fonts: ^6.0.0
+```
+
+Run `flutter pub get` after adding this dependency.
+
 ## Troubleshooting
 
-### Missing Configuration File
+- **"Flutcn UI is not initialized"**:
+  - Run `flutcn_ui init` to create `flutcn.config.json`.
+- **"Please specify a widget name"**:
+  - Provide a widget name, e.g., `flutcn_ui add button`.
+- **Theme files not generated**:
+  - Ensure you’re in a Flutter project root (with `pubspec.yaml`).
+  - Verify the CLI is installed correctly (`dart pub global activate --source path .` from the package root).
+- **Network errors**:
+  - The `add` command requires a running API at `http://localhost:3000/registry`. Set up a local server or update the API URL in `bin/injection_container.dart`.
 
-If you see the error `flutcn_ui is not initialized`, run `flutcn_ui init` to create the configuration file.
+## Development
 
-### Component Not Found
+### Project Structure
 
-If a component is not found, ensure the component name is correct and the package is up to date.
+- `bin/`: CLI entry point and commands (`flutcn_ui.dart`, `init.dart`, `add.dart`).
+- `lib/src/core/`: Utilities and constants (e.g., `file_paths.dart`, `spinners.dart`).
+- `lib/src/data/`: Data layer (models, services, repositories).
+- `lib/src/domain/`: Domain layer (entities, use cases).
+
+### Running Locally
+
+From the package root:
+
+```bash
+dart run bin/flutcn_ui.dart init --default
+```
+
+### Building and Testing
+
+1. Install dependencies:
+   ```bash
+   dart pub get
+   ```
+2. Run tests (if implemented):
+   ```bash
+   dart test
+   ```
 
 ## Contributing
 
-Contributions are welcome! Please read the [contribution guidelines](CONTRIBUTING.md) before submitting a pull request.
+We welcome contributions! To contribute:
+
+1. Fork the repository: [github.com/OmarElhassaniAlaoui/flutcn_ui](https://github.com/OmarElhassaniAlaoui/flutcn_ui).
+2. Create a feature branch (`git checkout -b feature-name`).
+3. Commit your changes (`git commit -m "Add feature"`).
+4. Push to your fork (`git push origin feature-name`).
+5. Open a pull request with a detailed description.
+
+For major changes, open an issue first to discuss with maintainers.
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
----
+## Acknowledgments
 
-# Changelog
-
-## [1.0.0] - 2024-10-01
-
-### Added
-
-- Initial release of `flutcn_ui` CLI tool.
-- Commands: `init`, `add`, `list`, `update`.
-- Modular components: Button, Text Input, Card, List.
+- Built with [Dart](https://dart.dev/) and inspired by tools like [Shadcn UI](https://ui.shadcn.com/).
+- Thanks to the Flutter community for continuous inspiration.
 
 ---
-
