@@ -55,6 +55,118 @@ class CommandInterfaceImpl implements CommandInterface {
             appTheme: FilePaths.newYorkThemeFileContent,
           );
           break;
+        case 'red':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.redThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'rose':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.roseThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'pink':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.pinkThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'purple':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.purpleThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'violet':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.violetThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'indigo':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.indigoThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'blue':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.blueThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'sky':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.skyThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'cyan':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.cyanThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'teal':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.tealThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'emerald':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.emeraldThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'green':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.greenThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'lime':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.limeThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'yellow':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.yellowThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'amber':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.amberThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
+        case 'orange':
+          await _createTheme(
+            themePath: config.themePath,
+            paletteColors: FilePaths.orangeThemeFileContent,
+            appTheme: FilePaths.newYorkThemeFileContent,
+          );
+          break;
         default:
           await _createDefaultTheme();
       }

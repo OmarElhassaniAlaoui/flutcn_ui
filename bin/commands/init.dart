@@ -52,8 +52,9 @@ class InitCommand extends Command {
         print('Error: $e');
       }
       return;
-    }
-    final appName = await getAppName();
+    } 
+    
+    // final appName = await getAppName();
 
     final themePath = prompts.get(Questions.initCommandQuestions['theme_path']!,
         defaultsTo: 'lib/themes');
