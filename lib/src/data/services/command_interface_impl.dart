@@ -131,13 +131,13 @@ class CommandInterfaceImpl implements CommandInterface {
     );
   }
 
-  Future<void> _createDefaultTheme() async {
-    final file = File('lib/themes/default_theme.dart');
-    if (!file.existsSync()) {
-      await file.create(recursive: true);
-      await file.writeAsString(FilePaths.defaultThemePath);
-    }
-  }
+  // Future<void> _createDefaultTheme() async {
+  //   final file = File('lib/themes/default_theme.dart');
+  //   if (!file.existsSync()) {
+  //     await file.create(recursive: true);
+  //     await file.writeAsString(FilePaths.defaultThemePath);
+  //   }
+  // }
 
   Future<void> _addGoogleFontsDependency() async {
     await _spinnerHelper.runWithSpinner(
