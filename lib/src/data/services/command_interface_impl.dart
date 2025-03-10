@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutcn_ui/src/core/constants/file_paths.dart';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import 'package:flutcn_ui/src/data/models/widget_model.dart';
