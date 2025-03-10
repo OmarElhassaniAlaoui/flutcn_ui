@@ -7,7 +7,6 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  google_fonts: ^6.0.0
   args: ^2.6.0
   cli_spin: ^1.0.1
   dartz: ^0.10.1
