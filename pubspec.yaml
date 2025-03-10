@@ -1,6 +1,6 @@
 name: flutcn_ui
 description: A UI component library for Flutter inspired by shadcn/ui, providing modular and customizable widgets.
-version: 0.1.0
+version: 1.0.0
 repository: https://github.com/OmarElhassaniAlaoui/flutcn_ui
 environment:
   sdk: ^3.6.2
