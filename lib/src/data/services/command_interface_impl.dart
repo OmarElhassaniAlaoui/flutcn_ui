@@ -91,7 +91,7 @@ class CommandInterfaceImpl implements CommandInterface {
     required String style,
     required String baseColor,
   }) async {
-    const String baseUrl = 'http://localhost:3000/registry';
+    const String baseUrl = 'https://flutcnui.netlify.app/registry';
     // Use spinner to indicate theme fetching
     await _spinnerHelper.runWithSpinner(
       message: 'Fetching theme files',

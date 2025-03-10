@@ -28,5 +28,5 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<ApiService>(
-      () => HttpServiceImpl(baseUrl: 'http://localhost:3000/registry'));
+      () => HttpServiceImpl(baseUrl: 'https://flutcnui.netlify.app/registry'));
 }
