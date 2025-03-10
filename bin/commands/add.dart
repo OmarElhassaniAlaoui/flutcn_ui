@@ -51,7 +51,8 @@ class AddCommand extends Command {
           final result = await addUseCase(
             widget: WidgetEntity(
               name: widgetName,
-              link: "http://localhost:3000/registry/widgets/$style/$widgetName",
+              link:
+                  "https://flutcnui.netlify.app/registry/widgets/$style/$widgetName",
               content: '',
             ),
           );

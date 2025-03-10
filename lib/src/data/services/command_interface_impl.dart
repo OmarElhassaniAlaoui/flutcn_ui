@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutcn_ui/src/core/constants/file_paths.dart';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import 'package:flutcn_ui/src/data/models/widget_model.dart';
@@ -91,7 +90,7 @@ class CommandInterfaceImpl implements CommandInterface {
     required String style,
     required String baseColor,
   }) async {
-    const String baseUrl = 'http://localhost:3000/registry';
+    const String baseUrl = 'https://flutcnui.netlify.app/registry';
     // Use spinner to indicate theme fetching
     await _spinnerHelper.runWithSpinner(
       message: 'Fetching theme files',
