@@ -160,8 +160,8 @@ dart run bin/flutcn_ui.dart init --default
    dart test
    ```
 ## upcoming features ✨..
-  [] ```--list or -l ``` command to show list of available widgets 
-  [] multi select widgets
+  -[] ```--list or -l ``` command to show list of available widgets. 
+  -[] multi select widgets
   
 ## Contributing
 
