@@ -1,4 +1,3 @@
-
 ---
 
 # Flutcn UI CLI
@@ -162,6 +161,9 @@ dart run bin/flutcn_ui.dart init --default
    ```bash
    dart test
    ```
+## upcoming features ✨..
+  [] ```--list or -l ``` command to show list of available widgets 
+  [] multi select widgets 
 
 ## Contributing
 
