@@ -1,6 +1,3 @@
-
----
-
 # Flutcn UI CLI
 
 ![Dart](https://img.shields.io/badge/Dart-3.6.2-blue.svg) ![License](https://img.shields.io/badge/License-MIT-green.svg) ![GitHub](https://img.shields.io/github/stars/OmarElhassaniAlaoui/flutcn_ui)
@@ -162,7 +159,11 @@ dart run bin/flutcn_ui.dart init --default
    ```bash
    dart test
    ```
-
+## upcoming features ✨..
+  - [ ] ```--list or -l ``` command to show list of available widgets. 
+  
+  - [ ] multi select widgets.
+  
 ## Contributing
 
 We welcome contributions! To contribute:
@@ -198,4 +199,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
   </tr>
 </table>
 
----
