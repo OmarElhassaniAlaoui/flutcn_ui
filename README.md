@@ -32,9 +32,15 @@ dart pub get
 dart pub global activate --source path .
 ```
 
+<<<<<<< HEAD
 ### From Pub (Not Published Yet)
 
 Once published to Dart Pub, install globally with:
+=======
+### From Pub
+
+install globally with:
+>>>>>>> release/0.1.0
 
 ```bash
 dart pub global activate flutcn_ui
@@ -184,4 +190,21 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - Built with [Dart](https://dart.dev/) and inspired by tools like [Shadcn UI](https://ui.shadcn.com/).
 - Thanks to the Flutter community for continuous inspiration.
 
+<<<<<<< HEAD
+=======
+## Maintainers ✨
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/OmarElhassaniAlaoui"> 
+        <img src="https://avatars.githubusercontent.com/u/102819564?v=4" width="100px;" alt=""/>
+        <br />
+        <sub><b>Omar Elhassani Alaoui</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
+>>>>>>> release/0.1.0
 ---
