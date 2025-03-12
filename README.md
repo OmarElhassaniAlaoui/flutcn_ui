@@ -28,9 +28,7 @@ cd flutcn_ui
 dart pub get
 dart pub global activate --source path .
 ```
-
 ### From Pub
-
 install globally with:
 
 ```bash
