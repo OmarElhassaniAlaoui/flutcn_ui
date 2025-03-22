@@ -241,4 +241,10 @@ class CommandInterfaceImpl implements CommandInterface {
       content: response.body.toString(),
     );
   }
+  
+  @override
+  Future<List<String>> listWidgets() {
+    // TODO: implement listWidgets
+    throw UnimplementedError();
+  }
 }

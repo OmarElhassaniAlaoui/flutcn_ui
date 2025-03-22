@@ -11,4 +11,8 @@ abstract class CommandRepository {
   Future<Either<Failure, WidgetEntity>> add({
     required WidgetEntity widget,
   });
+
+  Future<Either<Failure,List<String>>> list() ; 
+
+
 }

@@ -37,4 +37,10 @@ class CommandRepositoryImpl implements CommandRepository {
       return Left(GenericFailure(message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<Failure, List<String>>> list() {
+    // TODO: implement list
+    throw UnimplementedError();
+  }
 }
