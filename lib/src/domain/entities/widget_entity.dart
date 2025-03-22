@@ -15,5 +15,5 @@ class WidgetEntity extends Equatable {
   toModel() => WidgetModel.fromJSON(this);
 
   @override
-  List<Object?> get props => [name, link, content ];
+  List<Object?> get props => [name, link, content];
 }

@@ -22,6 +22,7 @@ class AddCommand extends Command {
   @override
   Future<void> run() async {
     try {
+      
       final widgetName =
           argResults?.rest.isEmpty == false ? argResults?.rest.first : null;
 
