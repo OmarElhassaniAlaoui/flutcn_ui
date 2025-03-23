@@ -10,5 +10,5 @@ abstract class CommandInterface {
     required WidgetModel widget,
   });
 
-  Future<List<String>> listWidgets();
+  Future<List<WidgetModel>> list();
 }

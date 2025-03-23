@@ -12,7 +12,7 @@ abstract class CommandRepository {
     required WidgetEntity widget,
   });
 
-  Future<Either<Failure,List<String>>> list() ; 
+  Future<Either<Failure,List<WidgetEntity>>> list() ; 
 
 
 }

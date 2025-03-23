@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:args/command_runner.dart';
+import 'package:flutcn_ui/src/core/constants/api_constants.dart';
+import 'package:flutcn_ui/src/core/helpers/check_mode.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
@@ -22,7 +24,6 @@ class AddCommand extends Command {
   @override
   Future<void> run() async {
     try {
-      
       final widgetName =
           argResults?.rest.isEmpty == false ? argResults?.rest.first : null;
 
@@ -52,8 +53,9 @@ class AddCommand extends Command {
           final result = await addUseCase(
             widget: WidgetEntity(
               name: widgetName,
-              link:
-                  "https://flutcnui.netlify.app/registry/widgets/$style/$widgetName",
+              link: isDevMode()
+                  ? "${ApiConstants.widgetsDev}/$style/$widgetName"
+                  : "${ApiConstants.widgetsProd}/$style/$widgetName",
               content: '',
             ),
           );
@@ -63,6 +65,8 @@ class AddCommand extends Command {
             (widget) => widget,
           );
         },
+        onError: "Error adding widget",
+        onSuccess: "Successfully added $widgetName widget",
       );
 
       // Create widget files with spinner
@@ -74,12 +78,13 @@ class AddCommand extends Command {
             await widgetDir.create(recursive: true);
           }
           final widgetFilePath = '$widgetsPath/$widgetName.dart';
-          await File(widgetFilePath).writeAsString(resultWidget.content);
+          await File(widgetFilePath).writeAsString(resultWidget.content!);
         },
+        onError: "Error creating widget file",
+        onSuccess: "\n✨ Successfully created $widgetName widget in $widgetsPath/$widgetName.dart",
       );
 
-      print(
-          '\n✨ Successfully created $widgetName widget in $widgetsPath/$widgetName.dart');
+     
     } catch (e, stackTrace) {
       print('\n❌ Error in AddCommand:');
       print(e);
