@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flutcn_ui/src/core/constants/api_constants.dart';
+import 'package:flutcn_ui/src/core/helpers/check_mode.dart';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import 'package:flutcn_ui/src/data/models/widget_model.dart';
@@ -94,37 +96,35 @@ class CommandInterfaceImpl implements CommandInterface {
     // Use spinner to indicate theme fetching
     await _spinnerHelper.runWithSpinner(
       message: 'Fetching theme files',
+      onSuccess: "Fetched theme files",
+      onError: "Error fetching theme files",
       action: () async {
-        try {
-          // Fetch palette colors from API
-          final paletteResponse = await apiService.get(
-            '$baseUrl/colorScheme/$style/$baseColor', // e.g., themes/new-york/zinc/palette
-            headers: {'Content-Type': 'text/plain'},
-          );
+        // Fetch palette colors from API
+        final paletteResponse = await apiService.get(
+          '$baseUrl/colorScheme/$style/$baseColor', // e.g., themes/new-york/zinc/palette
+          headers: {'Content-Type': 'text/plain'},
+        );
 
-          // Fetch theme definition from API
-          final themeResponse = await apiService.get(
-            '$baseUrl/theme/$style', // e.g., themes/new-york/zinc/theme
-            headers: {'Content-Type': 'text/plain'},
-          );
+        // Fetch theme definition from API
+        final themeResponse = await apiService.get(
+          '$baseUrl/theme/$style', // e.g., themes/new-york/zinc/theme
+          headers: {'Content-Type': 'text/plain'},
+        );
 
-          if (paletteResponse.status != 200 || themeResponse.status != 200) {
-            throw ServerException(
-                message:
-                    'Failed to fetch theme from API: Palette(${paletteResponse.status}), Theme(${themeResponse.status})');
-          }
+        if (paletteResponse.status != 200 || themeResponse.status != 200) {
+          throw ServerException(
+              message:
+                  'Failed to fetch theme from API: Palette(${paletteResponse.status}), Theme(${themeResponse.status})');
+        }
 
-          final appThemeFile = File('$themePath/app_theme.dart');
-          final appPaletteFile = File('$themePath/app_pallete.dart');
+        final appThemeFile = File('$themePath/app_theme.dart');
+        final appPaletteFile = File('$themePath/app_pallete.dart');
 
-          if (!appThemeFile.existsSync()) {
-            await appThemeFile.create(recursive: true);
-            await appPaletteFile.create(recursive: true);
-            await appThemeFile.writeAsString(themeResponse.body.toString());
-            await appPaletteFile.writeAsString(paletteResponse.body.toString());
-          }
-        } catch (e) {
-          throw ServerException(message: 'Error fetching theme: $e');
+        if (!appThemeFile.existsSync()) {
+          await appThemeFile.create(recursive: true);
+          await appPaletteFile.create(recursive: true);
+          await appThemeFile.writeAsString(themeResponse.body.toString());
+          await appPaletteFile.writeAsString(paletteResponse.body.toString());
         }
       },
     );
@@ -141,6 +141,8 @@ class CommandInterfaceImpl implements CommandInterface {
   Future<void> _addGoogleFontsDependency() async {
     await _spinnerHelper.runWithSpinner(
       message: 'Installing google_fonts dependency',
+      onSuccess: "Added google_fonts to pubspec.yaml",
+      onError: "Error adding google_fonts dependency",
       action: () async {
         final pubspecFile = File('pubspec.yaml');
         if (!pubspecFile.existsSync()) {
@@ -163,10 +165,6 @@ class CommandInterfaceImpl implements CommandInterface {
         }
       },
     );
-
-    // Print instructions after spinner completes
-    print('✓ Added google_fonts to pubspec.yaml');
-    print('Please run "flutter pub get" to install the dependency.');
   }
 
   // Future<void> _createTheme({
@@ -230,21 +228,48 @@ class CommandInterfaceImpl implements CommandInterface {
   @override
   Future<WidgetModel> add({required WidgetModel widget}) async {
     final response = await apiService.get(
-      widget.link,
+      widget.link!,
       headers: {
         'Content-Type': 'text/plain',
       },
     );
+
     return WidgetModel(
       name: widget.name,
       link: widget.link,
       content: response.body.toString(),
     );
   }
-  
+
   @override
-  Future<List<String>> listWidgets() {
-    // TODO: implement listWidgets
-    throw UnimplementedError();
+  Future<List<WidgetModel>> list() async {
+    try {
+      final response = await apiService.get(
+          isDevMode() ? ApiConstants.widgetsDev : ApiConstants.widgetsProd,
+          headers: {'Content-Type': 'application/json'});
+
+      if (response.status != 200) {
+        throw Exception('Failed to fetch widgets');
+      }
+
+      final Map<String, dynamic> data = response.body;
+
+      if (!data.containsKey('widgets')) {
+        print(
+            'Response does not contain "widgets" key. Available keys: ${data.keys.toList()}');
+        return [];
+      }
+
+      final List<dynamic> widgetsJson = data['widgets'] ?? [];
+
+      final List<WidgetModel> widgets = widgetsJson
+          .map((widgetJson) => WidgetModel.fromJSON(widgetJson))
+          .toList();
+
+      return widgets;
+    } catch (e) {
+      print('Error fetching widgets: $e');
+      return [];
+    }
   }
 }

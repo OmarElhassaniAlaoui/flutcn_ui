@@ -1,6 +1,9 @@
+import 'package:flutcn_ui/src/core/constants/api_constants.dart';
+import 'package:flutcn_ui/src/core/helpers/check_mode.dart';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/services/api_service.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
+import 'package:flutcn_ui/src/domain/usecases/list_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutcn_ui/src/domain/usecases/init_usecase.dart';
 import 'package:flutcn_ui/src/data/repository/command_repository_impl.dart';
@@ -14,6 +17,7 @@ Future<void> init() async {
   // Use cases
   sl.registerLazySingleton(() => InitUseCase(sl()));
   sl.registerLazySingleton(() => AddUseCase(sl()));
+  sl.registerLazySingleton(() => ListUseCase(sl()));
 
   // Repository
   sl.registerLazySingleton<CommandRepository>(
@@ -28,5 +32,8 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<ApiService>(
-      () => HttpServiceImpl(baseUrl: 'https://flutcnui.netlify.app/registry'));
+    () => HttpServiceImpl(
+      baseUrl: isDevMode() ? ApiConstants.baseDevUrl : ApiConstants.baseProdUrl,
+    ),
+  );
 }
