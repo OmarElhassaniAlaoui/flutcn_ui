@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:flutcn_ui/src/core/constants/api_constants.dart';
 import 'package:flutcn_ui/src/core/helpers/check_mode.dart';
+import 'package:flutcn_ui/src/core/utils/checko_box_chooser.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
+import 'package:flutcn_ui/src/domain/usecases/list_usecase.dart';
 import '../injection_container.dart' as di;
 
 class AddCommand extends Command {
@@ -24,71 +26,163 @@ class AddCommand extends Command {
   @override
   Future<void> run() async {
     try {
-      final widgetName =
-          argResults?.rest.isEmpty == false ? argResults?.rest.first : null;
-
-      if (widgetName == null) {
-        print('Please specify a widget name: flutcn_ui add <widget-name>');
-        return;
-      }
-
       if (!File('flutcn.config.json').existsSync()) {
         print('Flutcn UI is not initialized. Please run "flutcn_ui init"');
         return;
       }
 
-      final File configFile = File('flutcn.config.json');
-      final config = await configFile.readAsString();
-      final Map<String, dynamic> configJson = jsonDecode(config);
-      final widgetsPath = configJson['widgetsPath'];
-      final style = configJson['style'];
+      final config = await _getConfig();
+      final widgetsPath = config['widgetsPath'] as String;
+      final widgetName = argResults?.rest.firstOrNull;
 
-      final addUseCase = di.sl<AddUseCase>();
-      late WidgetEntity resultWidget;
-
-      // Fetch widget template with spinner
-      await _spinnerHelper.runWithSpinner(
-        message: 'Installing $widgetName widget',
-        action: () async {
-          final result = await addUseCase(
-            widget: WidgetEntity(
-              name: widgetName,
-              link: isDevMode()
-                  ? "${ApiConstants.widgetsDev}/$style/$widgetName"
-                  : "${ApiConstants.widgetsProd}/$style/$widgetName",
-              content: '',
-            ),
-          );
-
-          resultWidget = result.fold(
-            (failure) => throw Exception(failure.message),
-            (widget) => widget,
-          );
-        },
-        onError: "Error adding widget",
-        onSuccess: "Successfully added $widgetName widget",
-      );
-
-      // Create widget files with spinner
-      await _spinnerHelper.runWithSpinner(
-        message: "Creating widget file.",
-        action: () async {
-          final widgetDir = Directory('$widgetsPath');
-          if (!widgetDir.existsSync()) {
-            await widgetDir.create(recursive: true);
-          }
-          final widgetFilePath = '$widgetsPath/$widgetName.dart';
-          await File(widgetFilePath).writeAsString(resultWidget.content!);
-        },
-        onError: "Error creating widget file",
-        onSuccess: "\n✨ Successfully created $widgetName widget in $widgetsPath/$widgetName.dart",
-      );
-
-     
+      if (widgetName != null) {
+        await _handleSingleWidget(widgetName, widgetsPath, config);
+      } else {
+        await _handleMultiWidgetSelection(widgetsPath, config);
+      }
     } catch (e, stackTrace) {
       print('\n❌ Error in AddCommand:');
       print(e);
       print(stackTrace);
+    }
+  }
+
+  Future<void> _handleSingleWidget(
+    String widgetName,
+    String widgetsPath,
+    Map<String, dynamic> config,
+  ) async {
+    final addUseCase = di.sl<AddUseCase>();
+    late WidgetEntity resultWidget;
+
+    await _spinnerHelper.runWithSpinner(
+      message: 'Installing $widgetName widget',
+      action: () async {
+        final result = await addUseCase(
+          widget: WidgetEntity(
+            name: widgetName,
+            link: _buildWidgetUrl(widgetName, configJson: config),
+            content: '',
+          ),
+        );
+        resultWidget = result.fold(
+          (failure) => throw Exception(failure.message),
+          (widget) => widget,
+        );
+      },
+      onError: "Error adding widget",
+      onSuccess: "Successfully added $widgetName widget",
+    );
+
+    await _createWidgetFile(widgetsPath, widgetName, resultWidget.content!);
+    print('\n\x1B[32m✔ Successfully created: $widgetName.dart\x1B[0m');
+    print('File created in: \x1B[36m$widgetsPath/\x1B[0m');
+  }
+
+  Future<void> _handleMultiWidgetSelection(
+    String widgetsPath,
+    Map<String, dynamic> config,
+  ) async {
+    final listUseCase = di.sl<ListUseCase>();
+    final addUseCase = di.sl<AddUseCase>();
+    List<WidgetEntity> allWidgets = [];
+    List<String> successes = [];
+    List<String> failures = [];
+
+    await _spinnerHelper.runWithSpinner(
+      message: 'Fetching available widgets',
+      action: () async => allWidgets = await listUseCase.call(),
+      onSuccess: "Fetched available widgets",
+      onError: 'Error fetching widgets',
+    );
+
+    if (allWidgets.isEmpty) return;
+
+    print("\nAvailable Widgets (use space to select):");
+    final chosenNames = MultiCheckboxListChooser(
+      options: allWidgets.map((e) => e.name!).toList(),
+    ).choose();
+
+    if (chosenNames.isEmpty) return;
+
+    await _spinnerHelper.runWithSpinner(
+      message: 'Downloading ${chosenNames.length} widget(s)',
+      action: () async {
+        for (final widgetName in chosenNames) {
+          try {
+            final result = await addUseCase(
+              widget: WidgetEntity(
+                name: widgetName,
+                link: _buildWidgetUrl(widgetName, configJson: config),
+                content: '',
+              ),
+            );
+
+            await result.fold(
+              (failure) => throw Exception(failure.message),
+              (widget) async {
+                await _writeFile(widgetsPath, widgetName, widget.content!);
+                successes.add(widgetName);
+              },
+            );
+          } catch (e) {
+            failures.add(widgetName);
+          }
+        }
+      },
+    );
+
+    _printResults(successes, failures, widgetsPath);
+  }
+
+  String _buildWidgetUrl(String widgetName,
+      {required Map<String, dynamic> configJson}) {
+    final style = configJson['style'] as String;
+    return isDevMode()
+        ? "${ApiConstants.widgetsDev}/$style/$widgetName"
+        : "${ApiConstants.widgetsProd}/$style/$widgetName";
+  }
+
+  Future<Map<String, dynamic>> _getConfig() async {
+    return jsonDecode(await File('flutcn.config.json').readAsString());
+  }
+
+  Future<void> _createWidgetFile(
+    String widgetsPath,
+    String widgetName,
+    String content,
+  ) async {
+    await _spinnerHelper.runWithSpinner(
+      message: "Creating $widgetName.dart",
+      action: () async => _writeFile(widgetsPath, widgetName, content),
+      onError: "Error creating file",
+      onSuccess: "Created $widgetName.dart",
+    );
+  }
+
+  Future<void> _writeFile(
+      String widgetsPath, String widgetName, String content) async {
+    final widgetDir = Directory(widgetsPath);
+    if (!widgetDir.existsSync()) await widgetDir.create(recursive: true);
+    await File('$widgetsPath/$widgetName.dart').writeAsString(content);
+  }
+
+  void _printResults(
+      List<String> successes, List<String> failures, String widgetsPath) {
+    final successMessage = successes.isNotEmpty
+        ? '\n\x1B[32m✔ Successfully created:'
+            '\n${successes.map((n) => '  • $n.dart').join('\n')}\x1B[0m'
+        : '';
+
+    final errorMessage = failures.isNotEmpty
+        ? '\n\x1B[31m✖ Failed to create:'
+            '\n${failures.map((n) => '  • $n').join('\n')}\x1B[0m'
+        : '';
+
+    print([successMessage, errorMessage].join());
+
+    if (successes.isNotEmpty) {
+      print('\nFiles created in: \x1B[36m$widgetsPath/\x1B[0m');
     }
   }
 }

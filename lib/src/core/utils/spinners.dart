@@ -1,6 +1,7 @@
 import 'package:cli_spin/cli_spin.dart';
 
 class SpinnerHelper {
+  
   CliSpin? _spinner;
 
   /// Starts a spinner with a given message
