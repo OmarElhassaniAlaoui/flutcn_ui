@@ -94,8 +94,8 @@ class ListCommand extends Command {
                 ),
               );
 
-              result.fold(
-                (failure) => failedDownloads.add(widgetName),
+              await result.fold(
+                (failure) async => failedDownloads.add(widgetName),
                 (widgetWithContent) async {
                   try {
                     final filePath = '$widgetsPath/$widgetName.dart';
@@ -112,8 +112,6 @@ class ListCommand extends Command {
             }
           }
         },
-        onSuccess: '',
-        onError: '',
       );
 
       // Show final results
