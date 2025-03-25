@@ -2,22 +2,26 @@ import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 
 class WidgetModel extends WidgetEntity {
   const WidgetModel({
-    required super.name,
-    required super.link,
-    required super.content,
+    super.name,
+    super.link,
+    super.content,
+    super.style,
   });
 
-  factory WidgetModel.fromJSON(WidgetEntity entity) {
+  factory WidgetModel.fromJSON(Map<String, dynamic> json) {
     return WidgetModel(
-      name: entity.name,
-      link: entity.link,
-      content: entity.content,
+      name: json['name'],
+      link: json['link'],
+      content: json['content'],
+      style: json['style'],
     );
-  }
-
+  } 
+  
+  @override
   Map<String, dynamic> toJson() => {
         'name': name,
         'link': link,
         'content': content,
+        'style': style,
       };
 }

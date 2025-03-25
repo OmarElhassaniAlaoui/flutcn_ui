@@ -1,6 +1,7 @@
 import 'package:cli_spin/cli_spin.dart';
 
 class SpinnerHelper {
+  
   CliSpin? _spinner;
 
   /// Starts a spinner with a given message
@@ -14,33 +15,27 @@ class SpinnerHelper {
 
   /// Stops the spinner and displays a success message
   void success(String message) {
-    _spinner?.stop();
-    print('\x1B[32m \u{2714} \x1B[0m $message');
+    _spinner?.success(message);
   }
 
   /// Stops the spinner and displays an error message
   void error(String message) {
-    _spinner?.stop();
-    print('\x1B[31m \u{274C} \x1B[0m $message');
-  } 
-
-  
+    _spinner?.fail(message);
+  }
 
   /// Runs an asynchronous action with a spinner
   Future<void> runWithSpinner({
     required String message,
     required Future<void> Function() action,
-    String? onFinish,
+    String? onSuccess,
+    String? onError,
   }) async {
     start(message);
     try {
       await action();
-      success(message);
-      if (onFinish != null) {
-        success(onFinish);
-      }
+      success(onSuccess ?? message);
     } catch (e) {
-      error('$message: $e');
+      error('$onError: $e');
       rethrow;
     }
   }

@@ -37,4 +37,15 @@ class CommandRepositoryImpl implements CommandRepository {
       return Left(GenericFailure(message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<Failure, List<WidgetModel>>> list() async {
+    try {
+      final widgets = await commandInterface.list();
+      
+      return Right(widgets);
+    } catch (e) {
+      return Left(GenericFailure(message: e.toString()));
+    }
+  }
 }
