@@ -40,8 +40,10 @@ class CommandInterfaceImpl implements CommandInterface {
         style: config.style,
         baseColor: config.baseColor.toLowerCase(),
       );
-
-      await _addGoogleFontsDependency();
+      
+      if (config.installGoogleFonts) {
+        await _addGoogleFontsDependency();
+      }
 
       // TODO: Add state management
       // switch (config.stateManagement.toLowerCase()) {
