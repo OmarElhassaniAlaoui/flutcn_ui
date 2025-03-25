@@ -9,7 +9,6 @@ class HttpServiceImpl extends ApiService {
   HttpServiceImpl({
     required this.baseUrl,
     this.defaultHeaders = const {
-      "apikey": "your_api_key_here",
       "Content-Type": "application/json",
     },
   });
