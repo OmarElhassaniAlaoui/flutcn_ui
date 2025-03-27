@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:flutcn_ui/src/core/constants/api_constants.dart';
-import 'package:flutcn_ui/src/core/helpers/check_mode.dart';
 import 'package:flutcn_ui/src/core/utils/checko_box_chooser.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
@@ -138,9 +137,7 @@ class AddCommand extends Command {
   String _buildWidgetUrl(String widgetName,
       {required Map<String, dynamic> configJson}) {
     final style = configJson['style'] as String;
-    return isDevMode()
-        ? "${ApiConstants.widgetsDev}/$style/$widgetName"
-        : "${ApiConstants.widgetsProd}/$style/$widgetName";
+    return  "${ApiConstants.widgetsProd}/$style/$widgetName";
   }
 
   Future<Map<String, dynamic>> _getConfig() async {

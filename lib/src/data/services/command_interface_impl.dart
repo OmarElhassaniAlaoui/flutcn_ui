@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutcn_ui/src/core/constants/api_constants.dart';
-import 'package:flutcn_ui/src/core/helpers/check_mode.dart';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import 'package:flutcn_ui/src/data/models/widget_model.dart';
@@ -40,7 +39,7 @@ class CommandInterfaceImpl implements CommandInterface {
         style: config.style,
         baseColor: config.baseColor.toLowerCase(),
       );
-      
+
       if (config.installGoogleFonts) {
         await _addGoogleFontsDependency();
       }
@@ -246,8 +245,7 @@ class CommandInterfaceImpl implements CommandInterface {
   @override
   Future<List<WidgetModel>> list() async {
     try {
-      final response = await apiService.get(
-          isDevMode() ? ApiConstants.widgetsDev : ApiConstants.widgetsProd,
+      final response = await apiService.get(ApiConstants.widgetsProd,
           headers: {'Content-Type': 'application/json'});
 
       if (response.status != 200) {
