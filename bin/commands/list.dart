@@ -39,6 +39,7 @@ class ListCommand extends Command {
       final config = await configFile.readAsString();
       final configJson = jsonDecode(config) as Map<String, dynamic>;
       final widgetsPath = configJson['widgetsPath'] as String;
+      final style = configJson['style'] as String;
 
       await _spinnerHelper.runWithSpinner(
         message: 'Fetching widgets',
@@ -85,10 +86,12 @@ class ListCommand extends Command {
                 continue;
               }
 
+              print("Downloading ${widget.name}...");
+              print("${ApiConstants.widgetsProd}/${widget.name}");
               final result = await addUseCase(
                 widget: WidgetEntity(
                   name: widgetName,
-                  link:  "${ApiConstants.widgetsProd}/${widget.link}",
+                  link: "${ApiConstants.widgetsProd}/$style/${widget.name}",
                   content: "",
                 ),
               );
