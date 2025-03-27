@@ -1,5 +1,4 @@
 import 'package:flutcn_ui/src/core/constants/api_constants.dart';
-import 'package:flutcn_ui/src/core/helpers/check_mode.dart';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/services/api_service.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
@@ -33,7 +32,7 @@ Future<void> init() async {
 
   sl.registerLazySingleton<ApiService>(
     () => HttpServiceImpl(
-      baseUrl: isDevMode() ? ApiConstants.baseDevUrl : ApiConstants.baseProdUrl,
+      baseUrl:  ApiConstants.baseProdUrl,
     ),
   );
 }
