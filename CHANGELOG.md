@@ -1,4 +1,4 @@
-## [1.1.0] - 2024-02-20
+## [1.1.0] - 2025-03-25
 
 ### Added
 - Interactive multi-widget selection in `list` command
