@@ -53,7 +53,7 @@ class ListCommand extends Command {
         return;
       }
 
-      print("\nAvailable Widgets (use space to select):");
+      print("\nAvailable Widgets (use space to select):\n");
       final chosenNames = MultiCheckboxListChooser(
         options: allWidgets.map((e) => e.name!).toList(),
       ).choose();
@@ -87,7 +87,7 @@ class ListCommand extends Command {
               }
 
               print("Downloading ${widget.name}...");
-              print("${ApiConstants.widgetsProd}/${widget.name}");
+              
               final result = await addUseCase(
                 widget: WidgetEntity(
                   name: widgetName,
