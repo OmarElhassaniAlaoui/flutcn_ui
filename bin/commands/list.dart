@@ -42,7 +42,13 @@ class ListCommand extends Command {
 
       await _spinnerHelper.runWithSpinner(
         message: 'Fetching widgets',
-        action: () async => allWidgets = await listUseCase.call(),
+        action: () async {
+          final result = await listUseCase.call();
+          allWidgets = result.fold(
+            (failure) => throw Exception(failure.message),
+            (widgets) => widgets,
+          );
+        },
         onSuccess: "Fetched available widgets",
         onError: 'Error fetching widgets',
       );

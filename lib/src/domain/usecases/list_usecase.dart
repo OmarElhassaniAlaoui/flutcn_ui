@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import 'package:flutcn_ui/src/core/errors/failures.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 import 'package:flutcn_ui/src/domain/repository/command_repository.dart';
 
@@ -6,12 +8,7 @@ class ListUseCase {
 
   ListUseCase(this.repository);
 
-  Future<List<WidgetEntity>> call() async {
-    final result = await repository.list();
-   
-    return result.fold(
-      (failure) => throw Exception(failure.message),
-      (widgets) => widgets,
-    );
+  Future<Either<Failure, List<WidgetEntity>>> call() async {
+    return await repository.list();
   }
 }
