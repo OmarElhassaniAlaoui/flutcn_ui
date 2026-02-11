@@ -2,77 +2,182 @@ import 'package:flutter/material.dart';
 import '../themes/app_pallete.dart';
 
 // Helper class for button colors
+/// A helper class to encapsulate the background and foreground colors for a button.
+///
+/// This class is used internally by [FlutButton] to manage color schemes based on button variants.
 class ButtonColors {
+  /// The background color of the button.
   final Color background;
+
+  /// The foreground color (text and icon color) of the button.
   final Color foreground;
 
+  /// Creates a [ButtonColors] instance with the specified [background] and [foreground] colors.
   ButtonColors({required this.background, required this.foreground});
 }
 
 /// Button variants following shadcn UI button patterns
+/// Defines the available visual variants for the [FlutButton] widget.
 enum ButtonVariant {
+  /// A prominent button style, typically used for primary actions.
   primary,
+  /// A less prominent button style, often used for secondary actions.
   secondary,
+  /// A button with a transparent background and a border, suitable for less emphasized actions.
   outline,
+  /// A button with no background or border, appearing as plain text, often used for subtle actions.
   ghost,
+  /// A button that looks like a hyperlink, typically used for navigation.
   link,
+  /// A button indicating a destructive or dangerous action.
   destructive,
+  /// A fully customizable button variant, allowing complete control over its appearance.
   custom, // New variant for fully customized buttons
 }
 
 /// Button sizes following shadcn UI button patterns
+/// Defines the predefined sizes for the [FlutButton] widget.
 enum ButtonSize {
+  /// A small button size.
   sm,
+  /// A medium button size. This is often the default.
   md,
+  /// A large button size.
   lg,
+  /// A square button size, typically used for icons.
   icon,
+  /// Allows for custom dimensions to be specified.
   custom, // New size for fully customized dimensions
 }
 
+/// A highly customizable button widget inspired by shadcn/ui.
+///
+/// This is the core button component that can be configured with different
+/// variants, sizes, and a wide range of custom styling options.
 class FlutButton extends StatelessWidget {
+  /// The text to display inside the button. If [child] is provided, this is ignored.
   final String? text;
+
+  /// An optional icon to display before the text.
   final IconData? icon;
+
+  /// The callback that is called when the button is tapped.
+  /// If null, the button will be disabled.
   final VoidCallback? onPressed;
+
+  /// The visual style of the button. Defaults to [ButtonVariant.primary].
   final ButtonVariant variant;
+
+  /// The size of the button. Defaults to [ButtonSize.md].
   final ButtonSize size;
+
+  /// If true, a loading indicator is shown instead of the button's content.
   final bool isLoading;
+
+  /// If true, the button is visually and functionally disabled.
   final bool isDisabled;
+
+  /// If true, the button will only display the icon.
   final bool iconOnly;
+
+  /// A custom widget to display as the button's content. Overrides [text] and [icon].
   final Widget? child;
 
   // New customization parameters
+  /// Custom background color for the button.
   final Color? backgroundColor;
+
+  /// Custom foreground color (for text and icons).
   final Color? foregroundColor;
+
+  /// Custom background color when the button is hovered.
   final Color? hoverBackgroundColor;
+
+  /// Custom background color when the button is pressed.
   final Color? pressedBackgroundColor;
+
+  /// Custom background color when the button is disabled.
   final Color? disabledBackgroundColor;
+
+  /// Custom foreground color when the button is disabled.
   final Color? disabledForegroundColor;
+
+  /// Custom color for the loading indicator.
   final Color? loadingIndicatorColor;
+
+  /// Custom color for the button's border.
   final Color? borderColor;
+
+  /// Custom width for the button's border.
   final double? borderWidth;
+
+  /// The elevation of the button.
   final double? elevation;
+
+  /// The elevation of the button when hovered.
   final double? hoverElevation;
+
+  /// The elevation of the button when pressed.
   final double? pressedElevation;
+
+  /// The elevation of the button when disabled.
   final double? disabledElevation;
+
+  /// Custom border radius for the button.
   final double? borderRadius;
+
+  /// A fixed width for the button.
   final double? width;
+
+  /// A fixed height for the button.
   final double? height;
+
+  /// Custom font size for the button's text.
   final double? fontSize;
+
+  /// Custom size for the button's icon.
   final double? iconSize;
+
+  /// Custom font weight for the button's text.
   final FontWeight? fontWeight;
+
+  /// The padding around the button's content.
   final EdgeInsetsGeometry? padding;
+
+  /// The duration of the button's animations.
   final Duration? animationDuration;
+
+  /// The curve for the button's animations.
   final Curve? animationCurve;
+
+  /// The shape of the button. Can be [BoxShape.circle] or [BoxShape.rectangle].
   final BoxShape? shape;
+
+  /// A gradient to apply to the button's background.
   final Gradient? gradient;
+
+  /// A list of box shadows to apply to the button.
   final List<BoxShadow>? boxShadow;
+
+  /// The size of the loading indicator.
   final double? loadingSize;
+
+  /// The color of the overlay that appears when the button is pressed or hovered.
   final Color? overlayColor;
+
+  /// The minimum width of the button.
   final double? minWidth;
+
+  /// The minimum height of the button.
   final double? minHeight;
+
+  /// The alignment of the button's content.
   final MainAxisAlignment? contentAlignment;
+
+  /// The text style for the button's text.
   final TextStyle? textStyle;
 
+  /// Creates a [FlutButton] widget.
   const FlutButton({
     super.key,
     this.text,
@@ -121,7 +226,6 @@ class FlutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final colors = _getColorsForVariant(theme);
     final isEnabled = onPressed != null && !isDisabled && !isLoading;
 
@@ -138,7 +242,6 @@ class FlutButton extends StatelessWidget {
     final buttonContentAlignment = contentAlignment ?? MainAxisAlignment.center;
     final buttonAnimationDuration =
         animationDuration ?? const Duration(milliseconds: 200);
-    final buttonAnimationCurve = animationCurve ?? Curves.easeInOut;
 
     // Base button style from theme based on variant
     ButtonStyle baseStyle;
@@ -159,32 +262,38 @@ class FlutButton extends StatelessWidget {
       backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
         if (variant == ButtonVariant.custom) {
           final baseColor = backgroundColor ?? colors.background;
-          if (!isEnabled)
-            return disabledBackgroundColor ?? baseColor.withOpacity(0.5);
-          if (states.contains(WidgetState.pressed))
-            return pressedBackgroundColor ?? baseColor.withOpacity(0.9);
-          if (states.contains(WidgetState.hovered))
-            return hoverBackgroundColor ?? baseColor.withOpacity(0.8);
+          if (!isEnabled) {
+            return disabledBackgroundColor ?? baseColor.withAlpha((0.5 * 255).round());
+          }
+          if (states.contains(WidgetState.pressed)) {
+            return pressedBackgroundColor ?? baseColor.withAlpha((0.9 * 255).round());
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return hoverBackgroundColor ?? baseColor.withAlpha((0.8 * 255).round());
+          }
           return baseColor;
         } else {
           final baseColor = colors.background;
-          if (!isEnabled) return baseColor.withOpacity(0.5);
-          if (states.contains(WidgetState.pressed))
-            return baseColor.withOpacity(0.9);
-          if (states.contains(WidgetState.hovered))
-            return baseColor.withOpacity(0.8);
+          if (!isEnabled) return baseColor.withAlpha((0.5 * 255).round());
+          if (states.contains(WidgetState.pressed)) {
+            return baseColor.withAlpha((0.9 * 255).round());
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return baseColor.withAlpha((0.8 * 255).round());
+          }
           return baseColor;
         }
       }),
       foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
         if (variant == ButtonVariant.custom) {
           final baseColor = foregroundColor ?? colors.foreground;
-          if (!isEnabled)
-            return disabledForegroundColor ?? baseColor.withOpacity(0.5);
+          if (!isEnabled) {
+            return disabledForegroundColor ?? baseColor.withAlpha((0.5 * 255).round());
+          }
           return baseColor;
         } else {
           final baseColor = colors.foreground;
-          if (!isEnabled) return baseColor.withOpacity(0.5);
+          if (!isEnabled) return baseColor.withAlpha((0.5 * 255).round());
           return baseColor;
         }
       }),
@@ -215,7 +324,7 @@ class FlutButton extends StatelessWidget {
                         ? BorderSide(
                             color: isEnabled
                                 ? borderColor!
-                                : borderColor!.withOpacity(0.5),
+                                : borderColor!.withAlpha((0.5 * 255).round()),
                             width: borderWidth!,
                           )
                         : BorderSide.none,
@@ -227,7 +336,7 @@ class FlutButton extends StatelessWidget {
                         ? BorderSide(
                             color: isEnabled
                                 ? borderColor!
-                                : borderColor!.withOpacity(0.5),
+                                : borderColor!.withAlpha((0.5 * 255).round()),
                             width: borderWidth!,
                           )
                         : BorderSide.none,
@@ -239,7 +348,7 @@ class FlutButton extends StatelessWidget {
                     side: BorderSide(
                       color: isEnabled
                           ? colors.foreground
-                          : colors.foreground.withOpacity(0.5),
+                          : colors.foreground.withAlpha((0.5 * 255).round()),
                       width: 1.0,
                     ),
                   )

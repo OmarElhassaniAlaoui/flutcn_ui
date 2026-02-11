@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  tag-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version and check tag
+        id: info
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
+          TAG="v$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract changelog and create tag
+        if: steps.info.outputs.tag_exists == 'false'
+        env:
+          PKG_VERSION: ${{ steps.info.outputs.version }}
+          PKG_TAG: ${{ steps.info.outputs.tag }}
+        run: |
+          NOTES=$(awk "/^## \[${PKG_VERSION}\]/{found=1; next} /^## \[/{if(found) exit} found{print}" CHANGELOG.md)
+          if [ -z "$NOTES" ]; then
+            NOTES="Release ${PKG_TAG}"
+          fi
+          echo "$NOTES" > /tmp/release_notes.md
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$PKG_TAG" -m "Release $PKG_TAG"
+          git push origin "$PKG_TAG"
+
+      - name: Create GitHub Release
+        if: steps.info.outputs.tag_exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.info.outputs.tag }}
+          body_path: /tmp/release_notes.md
+          generate_release_notes: true

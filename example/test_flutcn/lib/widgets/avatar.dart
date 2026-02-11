@@ -1,28 +1,62 @@
 import 'package:flutter/material.dart';
 
 /// Avatar sizes following shadcn UI patterns
+/// Defines the predefined sizes for the [FlutAvatar] widget.
 enum AvatarSize {
+  /// A small avatar size.
   sm, // Small
+  /// A medium avatar size. This is often the default.
   md, // Medium
+  /// A large avatar size.
   lg, // Large
+  /// An extra large avatar size.
   xl, // Extra Large
+  /// Allows for a custom size to be specified via the [customSize] property.
   custom, // Custom size
 }
 
+/// A customizable avatar widget that displays a user's profile picture or a fallback.
+///
+/// The [FlutAvatar] widget supports various sizes, shapes, and customization options
+/// for its appearance, including background color, text color, and border.
 class FlutAvatar extends StatelessWidget {
-  final String? imageUrl; // URL of the avatar image
-  final String? fallbackText; // Fallback text if no image is provided
-  final AvatarSize size; // Size of the avatar
-  final double? customSize; // Custom size (used if size is AvatarSize.custom)
-  final Color? backgroundColor; // Background color for fallback
-  final Color? textColor; // Text color for fallback
-  final TextStyle? textStyle; // Custom text style for fallback
-  final BorderRadius? borderRadius; // Border radius for the avatar
-  final BoxShape shape; // Shape of the avatar (circle or rectangle)
-  final Widget? child; // Custom child widget
-  final double borderWidth; // Border width
-  final Color borderColor; // Border color
+  /// The URL of the avatar image to display. If null, [fallbackText] or [child] will be used.
+  final String? imageUrl;
 
+  /// The text to display when no image is provided. Typically the user's initials.
+  final String? fallbackText;
+
+  /// The predefined size of the avatar. Defaults to [AvatarSize.md].
+  final AvatarSize size;
+
+  /// A custom size for the avatar. This is used only when [size] is set to [AvatarSize.custom].
+  final double? customSize;
+
+  /// The background color of the avatar, especially visible for fallback text or if no image is loaded.
+  final Color? backgroundColor;
+
+  /// The color of the fallback text.
+  final Color? textColor;
+
+  /// The text style for the fallback text.
+  final TextStyle? textStyle;
+
+  /// The border radius for the avatar. Applied when [shape] is [BoxShape.rectangle].
+  final BorderRadius? borderRadius;
+
+  /// The shape of the avatar. Can be [BoxShape.circle] or [BoxShape.rectangle]. Defaults to [BoxShape.circle].
+  final BoxShape shape;
+
+  /// A custom child widget to display inside the avatar. If provided, it takes precedence over [imageUrl] and [fallbackText].
+  final Widget? child;
+
+  /// The width of the border around the avatar. Defaults to 0 (no border).
+  final double borderWidth;
+
+  /// The color of the border around the avatar. Defaults to [Colors.transparent].
+  final Color borderColor;
+
+  /// Creates a [FlutAvatar] widget.
   const FlutAvatar({
     super.key,
     this.imageUrl,
@@ -79,7 +113,9 @@ class FlutAvatar extends StatelessWidget {
     );
   }
 
-  /// Build fallback text if no image is provided
+  /// Builds the fallback widget, typically displaying the first letter of [fallbackText].
+  ///
+  /// Returns a [SizedBox.shrink()] if [fallbackText] is null.
   Widget _buildFallback(TextStyle fallbackStyle) {
     if (fallbackText == null) return const SizedBox.shrink();
     return Text(
@@ -88,7 +124,9 @@ class FlutAvatar extends StatelessWidget {
     );
   }
 
-  /// Get the size value based on the selected size
+  /// Determines the numerical size (width and height) of the avatar based on the [size] property.
+  ///
+  /// If [size] is [AvatarSize.custom], it uses [customSize] or defaults to 32.
   double _getSizeValue() {
     switch (size) {
       case AvatarSize.sm:
@@ -104,7 +142,9 @@ class FlutAvatar extends StatelessWidget {
     }
   }
 
-  /// Get the fallback text style
+  /// Generates the [TextStyle] for the fallback text.
+  ///
+  /// Uses [textStyle] if provided, otherwise creates a default style based on the avatar's size and theme.
   TextStyle _getFallbackTextStyle(ThemeData theme) {
     return textStyle ??
         TextStyle(
@@ -116,8 +156,14 @@ class FlutAvatar extends StatelessWidget {
 } 
 
 
+/// A collection of factory constructors for creating [FlutAvatar] widgets with predefined sizes and common configurations.
+///
+/// This class provides a convenient way to create avatars without needing to specify
+/// the [AvatarSize] enum directly for common sizes.
 class Avatar {
-  /// Small avatar
+  /// Creates a small [FlutAvatar] widget.
+  ///
+  /// The avatar will have a fixed size suitable for small contexts.
   static Widget sm({
     String? imageUrl,
     String? fallbackText,
@@ -126,9 +172,9 @@ class Avatar {
     TextStyle? textStyle,
     BorderRadius? borderRadius,
     BoxShape shape = BoxShape.circle,
-    Widget? child,
     double borderWidth = 0,
     Color borderColor = Colors.transparent,
+    Widget? child,
   }) {
     return FlutAvatar(
       imageUrl: imageUrl,
@@ -139,13 +185,15 @@ class Avatar {
       textStyle: textStyle,
       borderRadius: borderRadius,
       shape: shape,
-      child: child,
       borderWidth: borderWidth,
       borderColor: borderColor,
+      child: child,
     );
   }
 
-  /// Medium avatar
+  /// Creates a medium [FlutAvatar] widget.
+  ///
+  /// This is the default size for avatars.
   static Widget md({
     String? imageUrl,
     String? fallbackText,
@@ -154,9 +202,9 @@ class Avatar {
     TextStyle? textStyle,
     BorderRadius? borderRadius,
     BoxShape shape = BoxShape.circle,
-    Widget? child,
     double borderWidth = 0,
     Color borderColor = Colors.transparent,
+    Widget? child,
   }) {
     return FlutAvatar(
       imageUrl: imageUrl,
@@ -167,13 +215,13 @@ class Avatar {
       textStyle: textStyle,
       borderRadius: borderRadius,
       shape: shape,
-      child: child,
       borderWidth: borderWidth,
       borderColor: borderColor,
+      child: child,
     );
   }
 
-  /// Large avatar
+  /// Creates a large [FlutAvatar] widget.
   static Widget lg({
     String? imageUrl,
     String? fallbackText,
@@ -182,9 +230,9 @@ class Avatar {
     TextStyle? textStyle,
     BorderRadius? borderRadius,
     BoxShape shape = BoxShape.circle,
-    Widget? child,
     double borderWidth = 0,
     Color borderColor = Colors.transparent,
+    Widget? child,
   }) {
     return FlutAvatar(
       imageUrl: imageUrl,
@@ -195,13 +243,13 @@ class Avatar {
       textStyle: textStyle,
       borderRadius: borderRadius,
       shape: shape,
-      child: child,
       borderWidth: borderWidth,
       borderColor: borderColor,
+      child: child,
     );
   }
 
-  /// Extra large avatar
+  /// Creates an extra large [FlutAvatar] widget.
   static Widget xl({
     String? imageUrl,
     String? fallbackText,
@@ -210,9 +258,9 @@ class Avatar {
     TextStyle? textStyle,
     BorderRadius? borderRadius,
     BoxShape shape = BoxShape.circle,
-    Widget? child,
     double borderWidth = 0,
     Color borderColor = Colors.transparent,
+    Widget? child,
   }) {
     return FlutAvatar(
       imageUrl: imageUrl,
@@ -223,13 +271,15 @@ class Avatar {
       textStyle: textStyle,
       borderRadius: borderRadius,
       shape: shape,
-      child: child,
       borderWidth: borderWidth,
       borderColor: borderColor,
+      child: child,
     );
   }
 
-  /// Custom-sized avatar
+  /// Creates a custom-sized [FlutAvatar] widget.
+  ///
+  /// Allows specifying an arbitrary [size] for the avatar.
   static Widget custom({
     String? imageUrl,
     String? fallbackText,
@@ -239,9 +289,9 @@ class Avatar {
     TextStyle? textStyle,
     BorderRadius? borderRadius,
     BoxShape shape = BoxShape.circle,
-    Widget? child,
     double borderWidth = 0,
     Color borderColor = Colors.transparent,
+    Widget? child,
   }) {
     return FlutAvatar(
       imageUrl: imageUrl,
@@ -253,9 +303,9 @@ class Avatar {
       textStyle: textStyle,
       borderRadius: borderRadius,
       shape: shape,
-      child: child,
       borderWidth: borderWidth,
       borderColor: borderColor,
+      child: child,
     );
   }
 }

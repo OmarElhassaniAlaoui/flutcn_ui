@@ -1,0 +1,46 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: "3.6.2"
+
+      - name: Verify version consistency
+        env:
+          GIT_TAG: ${{ github.ref_name }}
+        run: |
+          PUBSPEC_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
+          TAG_VERSION="${GIT_TAG#v}"
+          if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
+            echo "Error: pubspec.yaml version ($PUBSPEC_VERSION) does not match git tag ($TAG_VERSION)."
+            exit 1
+          fi
+          echo "Versions match: $PUBSPEC_VERSION"
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Analyze before publishing
+        run: dart analyze
+
+      - name: Configure pub.dev credentials
+        env:
+          PUB_CREDS: ${{ secrets.PUB_CREDENTIALS }}
+        run: |
+          mkdir -p "$HOME/.config/dart"
+          echo "$PUB_CREDS" > "$HOME/.config/dart/pub-credentials.json"
+
+      - name: Publish to pub.dev
+        run: dart pub publish --force

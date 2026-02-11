@@ -1,0 +1,53 @@
+
+# This workflow is triggered when a new tag starting with 'v' (e.g., v1.2.0) is pushed.
+name: Publish to pub.dev
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*' # Matches tags like v1.2.3, v2.0.0, v3.1.4-beta
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Check out the repository code at the specific tag
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up the Flutter environment
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # Or 'beta', 'dev', 'master'
+
+      # 3. Verify that the pubspec.yaml version matches the Git tag
+      - name: Verify version consistency
+        run: |
+          # Extract version from the pubspec.yaml file
+          PUBSPEC_VERSION=$(grep 'version:' pubspec.yaml | sed 's/version: //')
+          
+          # Extract the version number from the Git tag (e.g., "v1.2.3" -> "1.2.3")
+          GIT_TAG_VERSION=${{ github.ref_name }}
+          GIT_TAG_VERSION=${GIT_TAG_VERSION#v}
+
+          # Check if the versions match. If not, fail the workflow.
+          if [ "$PUBSPEC_VERSION" != "$GIT_TAG_VERSION" ]; then
+            echo "Error: Version in pubspec.yaml ($PUBSPEC_VERSION) does not match the Git tag ($GIT_TAG_VERSION)."
+            exit 1
+          fi
+          echo "Versions match. Proceeding to publish."
+
+      # 4. Install dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 5. Configure pub.dev credentials securely from GitHub Secrets
+      - name: Configure pub.dev credentials
+        run: |
+          mkdir -p $HOME/.config/dart
+          echo '''${{ secrets.PUB_CREDENTIALS }}''' > $HOME/.config/dart/pub-credentials.json
+
+      # 6. Publish the package to pub.dev
+      - name: Publish to pub.dev
+        run: flutter pub publish --force

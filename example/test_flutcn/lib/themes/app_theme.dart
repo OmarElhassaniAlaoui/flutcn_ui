@@ -9,10 +9,7 @@ class FlutcnTheme {
   static const double _radiusSmall = 4.0;
   static const double _radiusDefault = 8.0;
   static const double _radiusLarge = 12.0;
-  static const double _radiusXL = 16.0;
 
-  // Animation duration
-  static const Duration _animationDuration = Duration(milliseconds: 200);
   static final colorScheme = AppPalette.colors;
   
 
@@ -39,8 +36,6 @@ class FlutcnTheme {
         onPrimary: onPrimary,
         secondary: secondary,
         onSecondary: onSecondary,
-        background: background,
-        onBackground: onBackground,
         surface: surface,
         onSurface: onSurface,
         error: error,
@@ -105,7 +100,7 @@ class FlutcnTheme {
           borderSide: BorderSide(color: error, width: 2),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: background,
         elevation: 1,
         shape: RoundedRectangleBorder(
@@ -114,8 +109,8 @@ class FlutcnTheme {
         ),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primary;
           }
           return colors['input']!;
@@ -125,23 +120,23 @@ class FlutcnTheme {
         ),
       ),
       radioTheme: RadioThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primary;
           }
           return colors['input']!;
         }),
       ),
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primary;
           }
           return colors['muted']!;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return primary.withOpacity(0.5);
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return primary.withAlpha((0.5 * 255).round());
           }
           return colors['input']!;
         }),
@@ -162,7 +157,7 @@ class FlutcnTheme {
           color: onBackground,
         ),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(_radiusLarge),
@@ -197,8 +192,8 @@ class FlutcnTheme {
       ),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      hoverColor: primary.withOpacity(0.05),
-      focusColor: primary.withOpacity(0.1),
+      hoverColor: primary.withAlpha((0.05 * 255).round()),
+      focusColor: primary.withAlpha((0.1 * 255).round()),
       splashFactory: NoSplash.splashFactory,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -228,8 +223,6 @@ class FlutcnTheme {
         onPrimary: onPrimary,
         secondary: secondary,
         onSecondary: onSecondary,
-        background: background,
-        onBackground: onBackground,
         surface: surface,
         onSurface: onSurface,
         error: error,
@@ -294,7 +287,7 @@ class FlutcnTheme {
           borderSide: BorderSide(color: error, width: 2),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: colors['darkMuted']!,
         elevation: 1,
         shape: RoundedRectangleBorder(
@@ -303,8 +296,8 @@ class FlutcnTheme {
         ),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primary;
           }
           return colors['darkMuted']!;
@@ -314,23 +307,23 @@ class FlutcnTheme {
         ),
       ),
       radioTheme: RadioThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primary;
           }
           return colors['darkMuted']!;
         }),
       ),
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primary;
           }
           return colors['darkMuted']!;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return primary.withOpacity(0.5);
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return primary.withAlpha((0.5 * 255).round());
           }
           return colors['darkMuted']!;
         }),
@@ -351,7 +344,7 @@ class FlutcnTheme {
           color: onBackground,
         ),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(_radiusLarge),
@@ -386,8 +379,8 @@ class FlutcnTheme {
       ),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      hoverColor: onBackground.withOpacity(0.05),
-      focusColor: onBackground.withOpacity(0.1),
+      hoverColor: onBackground.withAlpha((0.05 * 255).round()),
+      focusColor: onBackground.withAlpha((0.1 * 255).round()),
       splashFactory: NoSplash.splashFactory,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       materialTapTargetSize: MaterialTapTargetSize.padded,
