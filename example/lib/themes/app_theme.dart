@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './app_pallete.dart';
+import './app_palette.dart';
 
 class FlutcnTheme {
   // Default border radius values
@@ -47,7 +47,7 @@ class FlutcnTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(_radiusDefault),
           ),
-          
+
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         ),
@@ -195,6 +195,7 @@ class FlutcnTheme {
       splashFactory: NoSplash.splashFactory,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       materialTapTargetSize: MaterialTapTargetSize.padded,
+      
     );
   }
 

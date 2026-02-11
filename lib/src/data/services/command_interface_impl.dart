@@ -68,7 +68,7 @@ class CommandInterfaceImpl implements CommandInterface {
   }
 
   Future<void> _createConfigFile(
-    String? widgetsPaht,
+    String? widgetsPath,
     String? themePath,
     String? style,
     String? baseColor,
@@ -78,7 +78,7 @@ class CommandInterfaceImpl implements CommandInterface {
     if (!file.existsSync()) {
       await file.writeAsString('''
           {
-            "widgetsPath": "$widgetsPaht",
+            "widgetsPath": "$widgetsPath",
             "themePath": "$themePath",
             "style": "${style ?? 'default'}",
             "baseColor": "${baseColor ?? 'slate'}"
@@ -117,7 +117,7 @@ class CommandInterfaceImpl implements CommandInterface {
         }
 
         final appThemeFile = File('$themePath/app_theme.dart');
-        final appPaletteFile = File('$themePath/app_pallete.dart');
+        final appPaletteFile = File('$themePath/app_palette.dart');
 
         if (!appThemeFile.existsSync()) {
           await appThemeFile.create(recursive: true);
@@ -173,7 +173,7 @@ class CommandInterfaceImpl implements CommandInterface {
   // }) async {
   //   final appThemeFile = File('${themePath ?? 'lib/themes'}/app_theme.dart');
   //   final appPalleteFile =
-  //       File('${themePath ?? 'lib/themes'}/app_pallete.dart');
+  //       File('${themePath ?? 'lib/themes'}/app_palette.dart');
   //   if (!appThemeFile.existsSync()) {
   //     await appThemeFile.create(recursive: true);
   //     await appPalleteFile.create(recursive: true);

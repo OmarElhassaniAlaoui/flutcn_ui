@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../themes/app_pallete.dart';
+import '../themes/app_palette.dart';
 
 // Helper class for button colors
 class ButtonColors {
