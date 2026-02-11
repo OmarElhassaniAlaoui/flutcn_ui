@@ -30,10 +30,14 @@ jobs:
           echo "Versions match: $PUBSPEC_VERSION"
 
       - name: Install dependencies
-        run: dart pub get
+        run: |
+          # Temporarily exclude example/ (Flutter project, needs Flutter SDK)
+          mv example /tmp/_example_bak
+          dart pub get
+          mv /tmp/_example_bak example
 
       - name: Analyze before publishing
-        run: dart analyze
+        run: dart analyze lib bin
 
       - name: Configure pub.dev credentials
         env:
