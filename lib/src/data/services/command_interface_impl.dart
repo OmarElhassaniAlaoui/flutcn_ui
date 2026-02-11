@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutcn_ui/src/core/constants/api_constants.dart';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/models/init_config_model.dart';
 import 'package:flutcn_ui/src/data/models/widget_model.dart';
@@ -69,7 +68,7 @@ class CommandInterfaceImpl implements CommandInterface {
   }
 
   Future<void> _createConfigFile(
-    String? widgetsPaht,
+    String? widgetsPath,
     String? themePath,
     String? style,
     String? baseColor,
@@ -79,7 +78,7 @@ class CommandInterfaceImpl implements CommandInterface {
     if (!file.existsSync()) {
       await file.writeAsString('''
           {
-            "widgetsPath": "$widgetsPaht",
+            "widgetsPath": "$widgetsPath",
             "themePath": "$themePath",
             "style": "${style ?? 'default'}",
             "baseColor": "${baseColor ?? 'slate'}"
@@ -93,7 +92,6 @@ class CommandInterfaceImpl implements CommandInterface {
     required String style,
     required String baseColor,
   }) async {
-    const String baseUrl = 'https://flutcnui.netlify.app/registry';
     // Use spinner to indicate theme fetching
     await _spinnerHelper.runWithSpinner(
       message: 'Fetching theme files',
@@ -102,13 +100,13 @@ class CommandInterfaceImpl implements CommandInterface {
       action: () async {
         // Fetch palette colors from API
         final paletteResponse = await apiService.get(
-          '$baseUrl/colorScheme/$style/$baseColor', // e.g., themes/new-york/zinc/palette
+          '/colorScheme/$style/$baseColor',
           headers: {'Content-Type': 'text/plain'},
         );
 
         // Fetch theme definition from API
         final themeResponse = await apiService.get(
-          '$baseUrl/theme/$style', // e.g., themes/new-york/zinc/theme
+          '/theme/$style',
           headers: {'Content-Type': 'text/plain'},
         );
 
@@ -119,7 +117,7 @@ class CommandInterfaceImpl implements CommandInterface {
         }
 
         final appThemeFile = File('$themePath/app_theme.dart');
-        final appPaletteFile = File('$themePath/app_pallete.dart');
+        final appPaletteFile = File('$themePath/app_palette.dart');
 
         if (!appThemeFile.existsSync()) {
           await appThemeFile.create(recursive: true);
@@ -175,7 +173,7 @@ class CommandInterfaceImpl implements CommandInterface {
   // }) async {
   //   final appThemeFile = File('${themePath ?? 'lib/themes'}/app_theme.dart');
   //   final appPalleteFile =
-  //       File('${themePath ?? 'lib/themes'}/app_pallete.dart');
+  //       File('${themePath ?? 'lib/themes'}/app_palette.dart');
   //   if (!appThemeFile.existsSync()) {
   //     await appThemeFile.create(recursive: true);
   //     await appPalleteFile.create(recursive: true);
@@ -245,7 +243,7 @@ class CommandInterfaceImpl implements CommandInterface {
   @override
   Future<List<WidgetModel>> list() async {
     try {
-      final response = await apiService.get(ApiConstants.widgetsProd,
+      final response = await apiService.get('/widgets',
           headers: {'Content-Type': 'application/json'});
 
       if (response.status != 200) {

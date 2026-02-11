@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:args/command_runner.dart';
-import 'package:flutcn_ui/src/core/constants/api_constants.dart';
-import 'package:flutcn_ui/src/core/utils/checko_box_chooser.dart';
+import 'package:flutcn_ui/src/core/utils/checkbox_chooser.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
@@ -43,7 +42,13 @@ class ListCommand extends Command {
 
       await _spinnerHelper.runWithSpinner(
         message: 'Fetching widgets',
-        action: () async => allWidgets = await listUseCase.call(),
+        action: () async {
+          final result = await listUseCase.call();
+          allWidgets = result.fold(
+            (failure) => throw Exception(failure.message),
+            (widgets) => widgets,
+          );
+        },
         onSuccess: "Fetched available widgets",
         onError: 'Error fetching widgets',
       );
@@ -91,7 +96,7 @@ class ListCommand extends Command {
               final result = await addUseCase(
                 widget: WidgetEntity(
                   name: widgetName,
-                  link: "${ApiConstants.widgetsProd}/$style/${widget.name}",
+                  link: "/widgets/$style/${widget.name}",
                   content: "",
                 ),
               );

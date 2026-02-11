@@ -1,7 +1,7 @@
 // Implementation of the actual command
 import 'dart:io';
 import 'package:args/command_runner.dart';
-import 'package:flutcn_ui/src/core/constants/qestions.dart';
+import 'package:flutcn_ui/src/core/constants/questions.dart';
 import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/init_usecase.dart';
 import 'package:prompts/prompts.dart' as prompts;
