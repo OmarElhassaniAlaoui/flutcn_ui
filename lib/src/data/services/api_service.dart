@@ -20,13 +20,12 @@ class HttpServiceImpl extends ApiService {
     Map<String, dynamic>? headers,
   }) async {
 
-    final uri = Uri.parse(endpoint);
+    final uri = Uri.parse('$baseUrl$endpoint');
     final response = await http.get(
       uri,
       headers: {...defaultHeaders, ...?headers},
     );
-    return _httpToApiResponse(response); 
-    
+    return _httpToApiResponse(response);
   }
 
   @override
