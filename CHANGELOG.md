@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-02-11
+
+### Fixed
+
+- Remove `google_fonts` from CLI dependencies (not used directly, caused Dart SDK version conflict in CI)
+
 ## [1.1.3] - 2026-02-11
 
 ### Fixed
