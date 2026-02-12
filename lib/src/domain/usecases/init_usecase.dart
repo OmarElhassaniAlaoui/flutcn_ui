@@ -11,13 +11,6 @@ class InitUseCase {
   Future<Either<Failure, Unit>> call({
     required InitConfigEntity config,
   }) async {
-    try {
-      await repository.initializeProject(
-        config: config,
-      );
-      return Right(unit);
-    } catch (e) {
-      return Left(GenericFailure(message: e.toString()));
-    }
+    return await repository.initializeProject(config: config);
   }
 }
