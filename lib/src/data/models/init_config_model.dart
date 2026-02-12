@@ -11,13 +11,14 @@ class InitConfigModel extends InitConfigEntity {
   });
 
   factory InitConfigModel.fromJson(Map<String, dynamic> json) {
+    // Validation is handled by InitConfigEntity.fromJson()
+    final entity = InitConfigEntity.fromJson(json);
     return InitConfigModel(
-      themePath: json['themePath'],
-      widgetsPath: json['widgetsPath'],
-      style: json['style'],
-      baseColor: json['baseColor'],
-      installGoogleFonts: json['installGoogleFonts'] ?? false,
-      // stateManagement: json['stateManagement'],
+      themePath: entity.themePath,
+      widgetsPath: entity.widgetsPath,
+      style: entity.style,
+      baseColor: entity.baseColor,
+      installGoogleFonts: entity.installGoogleFonts,
     );
   }
 

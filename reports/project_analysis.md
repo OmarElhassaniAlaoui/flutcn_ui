@@ -1,6 +1,6 @@
 # Flutcn UI Project Analysis
 
-> **Version analyzed:** 1.1.2 | **Dart files:** 43 | **LOC (lib/src/):** ~1,090 | **Branch:** dev
+> **Version analyzed:** 1.1.4 | **Dart files:** 43 | **LOC (lib/src/):** ~1,090 | **Branch:** dev
 
 ## 1. Project Overview
 
@@ -153,50 +153,39 @@ No circular dependencies detected.
 ## 7. Code Quality — Strengths
 
 - **Clean Architecture** — proper layer separation, no layer violations
-- **Functional error handling** — `Either<Failure, T>` prevents null-related crashes
+- **Functional error handling** — `Either<Failure, T>` consistently used across all use cases
 - **Comprehensive failure types** — 10 specific failure classes for different error scenarios
 - **Cross-platform CLI UX** — platform-aware keyboard handling (Windows vs. Mac/Linux key codes)
 - **Visual feedback** — spinners, color-coded output, interactive selection
 - **Singleton DI** — lazy registration prevents unnecessary initialization
+- **CI/CD pipeline** — automated analysis, release tagging, and pub.dev publishing
 
-## 8. Bugs & Issues
+## 8. Bugs & Issues (Fixed)
 
-### Bug: API Service `get()` missing base URL
-**File:** `lib/src/data/services/api_service.dart`, line ~23
+All bugs identified in the original analysis have been resolved in v1.1.3 and v1.1.4:
 
-The `get()` method parses the endpoint directly without prepending `baseUrl`:
-```dart
-final uri = Uri.parse(endpoint);  // BUG: should be Uri.parse('$baseUrl$endpoint')
-```
-All other methods (`post`, `put`, `update`, `delete`) correctly use `'$baseUrl$endpoint'`.
+### ~~Bug: API Service `get()` missing base URL~~ — Fixed in v1.1.3
+**File:** `lib/src/data/services/api_service.dart`
 
-### Bug: Variable name typo
-**File:** `lib/src/data/services/command_interface_impl.dart`, line ~72
+`get()` now correctly prepends `baseUrl`, consistent with all other HTTP methods.
 
-```dart
-Future<void> _createConfigFile(
-  String? widgetsPaht,  // Should be: widgetsPath
-  ...
-)
-```
+### ~~Bug: Variable name typo~~ — Fixed in v1.1.3
+**File:** `lib/src/data/services/command_interface_impl.dart`
 
-### Issue: Filename typos
-| Current Name | Should Be |
-|-------------|-----------|
+`widgetsPaht` renamed to `widgetsPath`.
+
+### ~~Issue: Filename typos~~ — Fixed in v1.1.3
+| Old Name | New Name |
+|----------|----------|
 | `qestions.dart` | `questions.dart` |
 | `app_pallete.dart` | `app_palette.dart` |
 | `checko_box_chooser.dart` | `checkbox_chooser.dart` |
 
-### Issue: Error handling inconsistency
-`ListUseCase` throws exceptions instead of returning `Either<Failure, T>`:
-```dart
-// ListUseCase — breaks the pattern
-return result.fold(
-  (failure) => throw Exception(failure.message),  // Should propagate Either
-  (widgets) => widgets,
-);
-```
-Both `InitUseCase` and `AddUseCase` correctly return `Either`.
+### ~~Issue: Error handling inconsistency~~ — Fixed in v1.1.3
+`ListUseCase` now returns `Either<Failure, List<WidgetEntity>>` consistently with `InitUseCase` and `AddUseCase`. Callers in `add.dart` and `list.dart` unwrap with `.fold()`.
+
+### ~~Issue: google_fonts in CLI dependencies~~ — Fixed in v1.1.4
+`google_fonts` was listed as a CLI dependency but never imported — it's only written as a string to the user's `pubspec.yaml`. Removed to fix Dart SDK version conflict in CI.
 
 ## 9. Unused & Commented-Out Code
 
@@ -218,7 +207,7 @@ State management selection is prepared across multiple files but fully commented
 
 **Current state: Minimal**
 
-- Only file: `example/test_flutcn/test/widget_test.dart` (default Flutter template)
+- Only file: `example/test/widget_test.dart` (default Flutter template)
 - No unit tests for use cases, repositories, or services
 - No integration tests for CLI commands
 - `test` package is in dev dependencies but unused
@@ -229,13 +218,32 @@ State management selection is prepared across multiple files but fully commented
 3. CLI commands (integration tests with mock DI)
 4. API service (HTTP response handling)
 
-## 11. Improvement Recommendations
+## 11. CI/CD Pipeline
 
-### Priority 1 — Fix Bugs
-- [ ] Fix `get()` method in `HttpServiceImpl` to prepend `baseUrl`
-- [ ] Fix `widgetsPaht` typo in `command_interface_impl.dart`
-- [ ] Rename misspelled files (`qestions.dart`, `app_pallete.dart`, `checko_box_chooser.dart`)
-- [ ] Fix `ListUseCase` to return `Either` instead of throwing
+### Workflows (`.github/workflows/`)
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `ci.yml` | PR to `main` or `dev` | Lint, analyze, format check |
+| `release.yml` | Push to `main` | Extract version, create git tag & GitHub release |
+| `publish.yml` | Tag push `v*` | Verify version, analyze, publish to pub.dev |
+
+**Notes:**
+- CI excludes `example/` during `dart pub get` (Flutter project requires Flutter SDK, CI only has Dart)
+- `release.yml` skips if tag already exists (relevant when using git flow which creates tags locally)
+- Publish requires `PUB_CREDENTIALS` GitHub secret for pub.dev authentication
+
+### Version Bump Script
+`scripts/bump_version.sh` — updates version in `pubspec.yaml` and creates a CHANGELOG entry.
+
+## 12. Improvement Recommendations
+
+### ~~Priority 1 — Fix Bugs~~ — All Done (v1.1.3, v1.1.4)
+- [x] Fix `get()` method in `HttpServiceImpl` to prepend `baseUrl`
+- [x] Fix `widgetsPaht` typo in `command_interface_impl.dart`
+- [x] Rename misspelled files (`qestions.dart`, `app_pallete.dart`, `checko_box_chooser.dart`)
+- [x] Fix `ListUseCase` to return `Either` instead of throwing
+- [x] Remove unused `google_fonts` from CLI dependencies
 
 ### Priority 2 — Code Hygiene
 - [ ] Remove empty use case files or implement them
@@ -254,49 +262,53 @@ State management selection is prepared across multiple files but fully commented
 - [ ] `--path` option on `add` command — override default widget directory
 - [ ] Dependency resolution for widget inter-dependencies
 
-## 12. File Structure
+## 13. File Structure
 
 ```
 flutcn_ui/
+├── .github/workflows/
+│   ├── ci.yml                         # PR analysis & format checks
+│   ├── release.yml                    # Auto-tag & GitHub release on main push
+│   └── publish.yml                    # Publish to pub.dev on tag push
 ├── bin/
-│   ├── flutcn_ui.dart                  # CLI entry point
-│   ├── injection_container.dart        # GetIt DI setup
+│   ├── flutcn_ui.dart                 # CLI entry point
+│   ├── injection_container.dart       # GetIt DI setup
 │   └── commands/
-│       ├── init.dart                   # Init command (131 LOC)
-│       ├── add.dart                    # Add command (187 LOC)
-│       └── list.dart                   # List command (165 LOC)
+│       ├── init.dart                  # Init command (131 LOC)
+│       ├── add.dart                   # Add command (186 LOC)
+│       └── list.dart                  # List command (164 LOC)
 ├── lib/src/
 │   ├── core/
 │   │   ├── constants/
-│   │   │   ├── api_constants.dart      # API URLs (dev + prod)
-│   │   │   ├── app_constants.dart      # Legacy unused constant
-│   │   │   ├── file_paths.dart         # Default widget/theme paths
-│   │   │   └── qestions.dart           # CLI prompt definitions
+│   │   │   ├── api_constants.dart     # API URLs (dev + prod)
+│   │   │   ├── app_constants.dart     # Legacy unused constant
+│   │   │   ├── file_paths.dart        # Default widget/theme paths
+│   │   │   └── questions.dart         # CLI prompt definitions
 │   │   ├── errors/
-│   │   │   ├── exceptions.dart         # 8 custom exception classes
-│   │   │   └── failures.dart           # 10 failure classes (Equatable)
+│   │   │   ├── exceptions.dart        # 8 custom exception classes
+│   │   │   └── failures.dart          # 10 failure classes (Equatable)
 │   │   ├── helpers/
-│   │   │   └── check_mode.dart         # Dev/prod mode detection
+│   │   │   └── check_mode.dart        # Dev/prod mode detection
 │   │   ├── services/
-│   │   │   └── api_service.dart        # Abstract API interface
+│   │   │   └── api_service.dart       # Abstract API interface
 │   │   ├── usecase/
-│   │   │   └── usecase.dart            # Base UseCase<Type, Params>
+│   │   │   └── usecase.dart           # Base UseCase<Type, Params>
 │   │   └── utils/
-│   │       ├── checko_box_chooser.dart # Interactive multi-select UI
-│   │       ├── highlighter.dart        # ANSI color extension
-│   │       └── spinners.dart           # Async spinner wrapper
+│   │       ├── checkbox_chooser.dart  # Interactive multi-select UI
+│   │       ├── highlighter.dart       # ANSI color extension
+│   │       └── spinners.dart          # Async spinner wrapper
 │   ├── data/
 │   │   ├── interfaces/
-│   │   │   └── command.dart            # Data source contract
+│   │   │   └── command.dart           # Data source contract
 │   │   ├── models/
-│   │   │   ├── init_config_model.dart  # Config with JSON support
-│   │   │   ├── theme_model.dart        # Theme model
-│   │   │   ├── widget_file_model.dart  # Widget file model
-│   │   │   └── widget_model.dart       # Widget model with JSON
+│   │   │   ├── init_config_model.dart # Config with JSON support
+│   │   │   ├── theme_model.dart       # Theme model
+│   │   │   ├── widget_file_model.dart # Widget file model
+│   │   │   └── widget_model.dart      # Widget model with JSON
 │   │   ├── repository/
 │   │   │   └── command_repository_impl.dart  # Either-wrapping adapter
 │   │   └── services/
-│   │       ├── api_service.dart        # HTTP implementation (109 LOC)
+│   │       ├── api_service.dart       # HTTP implementation (109 LOC)
 │   │       └── command_interface_impl.dart   # Core logic (276 LOC)
 │   └── domain/
 │       ├── entities/
@@ -313,14 +325,22 @@ flutcn_ui/
 │           ├── list_usecase.dart
 │           ├── search_usecase.dart     # Empty placeholder
 │           └── update_usecase.dart     # Empty placeholder
-├── example/test_flutcn/               # Demo Flutter project
+├── example/                           # Demo Flutter app
 │   ├── lib/
 │   │   ├── main.dart
+│   │   ├── home.dart                  # Widget showcase screen
+│   │   ├── theme_notifier.dart        # Dark/light theme toggle
+│   │   ├── showcase/                  # Widget demo screens
 │   │   ├── themes/                    # Generated theme files
 │   │   └── widgets/                   # Generated widget files
 │   └── test/                          # Template test only
+├── scripts/
+│   └── bump_version.sh                # Version bump utility
+├── reports/
+│   └── project_analysis.md            # This file
 ├── pubspec.yaml
-├── analysis_options.yaml
+├── CHANGELOG.md
 ├── CLAUDE.md
+├── analysis_options.yaml
 └── README.md
 ```

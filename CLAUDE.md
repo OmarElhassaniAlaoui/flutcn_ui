@@ -42,9 +42,9 @@ dart run build_runner build --delete-conflicting-outputs
 The CLI must be run from within a Flutter project directory (where `pubspec.yaml` exists). For testing:
 
 ```bash
-cd example/test_flutcn
-dart run ../../bin/flutcn_ui.dart init --default
-dart run ../../bin/flutcn_ui.dart add button
+cd example
+dart run ../bin/flutcn_ui.dart init --default
+dart run ../bin/flutcn_ui.dart add button
 ```
 
 ## Architecture
@@ -82,7 +82,8 @@ The codebase follows Clean Architecture principles with clear separation:
 - Uses `dartz` package for `Either<Failure, Success>` pattern
 - Left side: Failure (error cases)
 - Right side: Success value
-- Repositories return `Either<Failure, T>`, use cases handle the unwrapping
+- Repositories return `Either<Failure, T>`, use cases pass through `Either`
+- Commands unwrap `Either` with `.fold()` inside spinner actions
 
 **Entity-Model Pattern**
 - Entities: Pure domain objects in `domain/entities/`
@@ -148,7 +149,7 @@ Widgets are fetched from the remote registry API:
 When CLI runs `init`:
 - Creates `flutcn.config.json` in project root
 - Creates theme directory (default: `lib/themes/`)
-- Generates `app_theme.dart` and `app_pallete.dart`
+- Generates `app_theme.dart` and `app_palette.dart`
 - Optionally adds `google_fonts` dependency to `pubspec.yaml`
 
 When CLI runs `add`:
@@ -161,7 +162,42 @@ When CLI runs `add`:
 - Use Clean Architecture layer separation strictly
 - All business logic belongs in use cases, not commands
 - Repository methods return `Either<Failure, T>`
-- Use cases handle try-catch and convert to Either
-- Commands unwrap Either with `.fold()` for user-facing messages
+- Use cases pass through `Either` from repositories (no unwrapping in domain layer)
+- Commands unwrap `Either` with `.fold()` inside spinner actions for user-facing messages
 - Prefer composition over inheritance
 - Use dependency injection for all external dependencies
+
+## Branching Strategy (Git Flow)
+
+- **Production branch:** `main`
+- **Development branch:** `dev`
+- **Feature branches:** `feat/<name>` — branch from `dev`, merge back to `dev`
+- **Bugfix branches:** `bugfix/<name>` — branch from `dev`, merge back to `dev`
+- **Release branches:** `release/v<version>` — branch from `dev`, merge to `main` and `dev`
+- **Hotfix branches:** `hotfix/v<version>` — branch from `main`, merge to `main` and `dev`
+
+Always commit before running `git flow release/hotfix finish` — finishing without committing leaves changes staged on the target branch with no tag created.
+
+## CI/CD
+
+### Workflows (`.github/workflows/`)
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `ci.yml` | PR to `main` or `dev` | `dart analyze`, `dart format` check |
+| `release.yml` | Push to `main` | Extract version from `pubspec.yaml`, create git tag & GitHub release |
+| `publish.yml` | Tag push `v*` | Verify version consistency, `dart analyze`, publish to pub.dev |
+
+### Release Process
+
+1. Bump version in `pubspec.yaml` (use `scripts/bump_version.sh` or manually)
+2. Update `CHANGELOG.md` with new version section
+3. Merge to `main` (via git flow release/hotfix finish)
+4. `release.yml` creates the tag and GitHub release automatically
+5. Tag push triggers `publish.yml` which publishes to pub.dev
+
+### CI Notes
+
+- CI uses Dart SDK `3.6.2` (not Flutter) — `example/` is temporarily excluded during `dart pub get` since it's a Flutter project requiring Flutter SDK
+- Publishing requires `PUB_CREDENTIALS` GitHub secret (pub.dev OAuth2 credentials)
+- If using git flow (which creates tags locally), `release.yml` may skip tag creation — push tags explicitly or create GitHub releases manually

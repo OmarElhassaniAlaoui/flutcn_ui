@@ -1,7 +1,8 @@
 import 'package:cli_spin/cli_spin.dart';
+import 'package:flutcn_ui/src/core/errors/exceptions.dart';
 
 class SpinnerHelper {
-  
+
   CliSpin? _spinner;
 
   /// Starts a spinner with a given message
@@ -35,8 +36,25 @@ class SpinnerHelper {
       await action();
       success(onSuccess ?? message);
     } catch (e) {
-      error('$onError: $e');
+      error('$onError: ${_friendlyMessage(e)}');
       rethrow;
     }
+  }
+
+  String _friendlyMessage(Object e) {
+    if (e is OfflineException) {
+      return 'No internet connection. Check your network and try again.';
+    } else if (e is ServerException) {
+      return e.message;
+    } else if (e is ComponentNotFoundException) {
+      return e.message;
+    } else if (e is ThemeNotFoundException) {
+      return e.message;
+    } else if (e is InvalidConfigFileException) {
+      return e.message;
+    } else if (e is InitializationException) {
+      return e.message;
+    }
+    return e.toString();
   }
 }

@@ -1,8 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:args/command_runner.dart';
+import 'package:flutcn_ui/src/core/errors/exceptions.dart';
 import 'package:flutcn_ui/src/core/utils/checkbox_chooser.dart';
+import 'package:flutcn_ui/src/core/utils/config_reader.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
+import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
 import 'package:flutcn_ui/src/domain/usecases/list_usecase.dart';
@@ -24,15 +26,14 @@ class AddCommand extends Command {
   @override
   Future<void> run() async {
     try {
-      if (!File('flutcn.config.json').existsSync()) {
+      if (!ConfigReader.configExists()) {
         print(
             '\x1B[37mFlutcn UI is not initialized. Please run "flutcn_ui init"\x1B[0m');
-
         return;
       }
 
-      final config = await _getConfig();
-      final widgetsPath = config['widgetsPath'] as String;
+      final config = await ConfigReader.readConfig();
+      final widgetsPath = config.widgetsPath;
       final widgetName = argResults?.rest.firstOrNull;
 
       if (widgetName != null) {
@@ -40,6 +41,8 @@ class AddCommand extends Command {
       } else {
         await _handleMultiWidgetSelection(widgetsPath, config);
       }
+    } on InvalidConfigFileException catch (e) {
+      print('\n❌ ${e.message}');
     } catch (e, stackTrace) {
       print('\n❌ Error in AddCommand:');
       print(e);
@@ -50,7 +53,7 @@ class AddCommand extends Command {
   Future<void> _handleSingleWidget(
     String widgetName,
     String widgetsPath,
-    Map<String, dynamic> config,
+    InitConfigEntity config,
   ) async {
     final addUseCase = di.sl<AddUseCase>();
     late WidgetEntity resultWidget;
@@ -61,7 +64,7 @@ class AddCommand extends Command {
         final result = await addUseCase(
           widget: WidgetEntity(
             name: widgetName,
-            link: _buildWidgetUrl(widgetName, configJson: config),
+            link: _buildWidgetUrl(widgetName, config: config),
             content: '',
           ),
         );
@@ -81,7 +84,7 @@ class AddCommand extends Command {
 
   Future<void> _handleMultiWidgetSelection(
     String widgetsPath,
-    Map<String, dynamic> config,
+    InitConfigEntity config,
   ) async {
     final listUseCase = di.sl<ListUseCase>();
     final addUseCase = di.sl<AddUseCase>();
@@ -119,7 +122,7 @@ class AddCommand extends Command {
             final result = await addUseCase(
               widget: WidgetEntity(
                 name: widgetName,
-                link: _buildWidgetUrl(widgetName, configJson: config),
+                link: _buildWidgetUrl(widgetName, config: config),
                 content: '',
               ),
             );
@@ -142,13 +145,8 @@ class AddCommand extends Command {
   }
 
   String _buildWidgetUrl(String widgetName,
-      {required Map<String, dynamic> configJson}) {
-    final style = configJson['style'] as String;
-    return "/widgets/$style/$widgetName";
-  }
-
-  Future<Map<String, dynamic>> _getConfig() async {
-    return jsonDecode(await File('flutcn.config.json').readAsString());
+      {required InitConfigEntity config}) {
+    return "/widgets/${config.style}/$widgetName";
   }
 
   Future<void> _createWidgetFile(

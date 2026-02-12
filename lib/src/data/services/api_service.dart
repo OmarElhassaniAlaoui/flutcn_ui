@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutcn_ui/src/core/errors/exceptions.dart';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:http/http.dart' as http;
 
 class HttpServiceImpl extends ApiService {
   final String baseUrl;
   final Map<String, String> defaultHeaders;
+  static const _timeout = Duration(seconds: 30);
 
   HttpServiceImpl({
     required this.baseUrl,
@@ -19,11 +23,9 @@ class HttpServiceImpl extends ApiService {
     Map<String, dynamic>? query,
     Map<String, dynamic>? headers,
   }) async {
-
     final uri = Uri.parse('$baseUrl$endpoint');
-    final response = await http.get(
-      uri,
-      headers: {...defaultHeaders, ...?headers},
+    final response = await _withErrorHandling(
+      () => http.get(uri, headers: {...defaultHeaders, ...?headers}),
     );
     return _httpToApiResponse(response);
   }
@@ -35,10 +37,12 @@ class HttpServiceImpl extends ApiService {
     Map<String, dynamic>? headers,
   }) async {
     final uri = Uri.parse('$baseUrl$endpoint');
-    final response = await http.post(
-      uri,
-      headers: {...defaultHeaders, ...?headers},
-      body: jsonEncode(data),
+    final response = await _withErrorHandling(
+      () => http.post(
+        uri,
+        headers: {...defaultHeaders, ...?headers},
+        body: jsonEncode(data),
+      ),
     );
     return _httpToApiResponse(response);
   }
@@ -51,10 +55,12 @@ class HttpServiceImpl extends ApiService {
     Map<String, dynamic>? headers,
   }) async {
     final uri = Uri.parse('$baseUrl$endpoint').replace(queryParameters: query);
-    final response = await http.patch(
-      uri,
-      headers: {...defaultHeaders, ...?headers},
-      body: jsonEncode(data),
+    final response = await _withErrorHandling(
+      () => http.patch(
+        uri,
+        headers: {...defaultHeaders, ...?headers},
+        body: jsonEncode(data),
+      ),
     );
     return _httpToApiResponse(response);
   }
@@ -67,10 +73,12 @@ class HttpServiceImpl extends ApiService {
     Map<String, dynamic>? headers,
   }) async {
     final uri = Uri.parse('$baseUrl$endpoint').replace(queryParameters: query);
-    final response = await http.put(
-      uri,
-      headers: {...defaultHeaders, ...?headers},
-      body: jsonEncode(data),
+    final response = await _withErrorHandling(
+      () => http.put(
+        uri,
+        headers: {...defaultHeaders, ...?headers},
+        body: jsonEncode(data),
+      ),
     );
     return _httpToApiResponse(response);
   }
@@ -82,11 +90,27 @@ class HttpServiceImpl extends ApiService {
     Map<String, dynamic>? headers,
   }) async {
     final uri = Uri.parse('$baseUrl$endpoint').replace(queryParameters: query);
-    final response = await http.delete(
-      uri,
-      headers: {...defaultHeaders, ...?headers},
+    final response = await _withErrorHandling(
+      () => http.delete(uri, headers: {...defaultHeaders, ...?headers}),
     );
     return _httpToApiResponse(response);
+  }
+
+  /// Wraps an HTTP call with timeout and offline detection.
+  Future<http.Response> _withErrorHandling(
+    Future<http.Response> Function() request,
+  ) async {
+    try {
+      return await request().timeout(_timeout);
+    } on SocketException {
+      throw OfflineException();
+    } on http.ClientException {
+      // The http package wraps SocketException in ClientException
+      // for DNS failures, connection refused, etc.
+      throw OfflineException();
+    } on TimeoutException {
+      throw ServerException(message: 'Request timed out after ${_timeout.inSeconds} seconds');
+    }
   }
 
   ApiResponse _httpToApiResponse(http.Response response) {

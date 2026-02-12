@@ -9,7 +9,7 @@ class WidgetEntity extends Equatable {
 
   const WidgetEntity({this.name, this.link, this.content, this.style});
 
-  toModel() => WidgetModel.fromJSON(toJson());
+  WidgetModel toModel() => WidgetModel.fromJSON(toJson());
 
   Map<String, dynamic> toJson() => {
         'name': name,

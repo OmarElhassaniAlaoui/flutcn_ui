@@ -1,7 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:args/command_runner.dart';
+import 'package:flutcn_ui/src/core/errors/exceptions.dart';
 import 'package:flutcn_ui/src/core/utils/checkbox_chooser.dart';
+import 'package:flutcn_ui/src/core/utils/config_reader.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
@@ -29,16 +30,14 @@ class ListCommand extends Command {
     List<String> skippedDownloads = [];
 
     try {
-      if (!File('flutcn.config.json').existsSync()) {
+      if (!ConfigReader.configExists()) {
         print('Flutcn UI is not initialized. Please run "flutcn_ui init"');
         return;
       }
 
-      final configFile = File('flutcn.config.json');
-      final config = await configFile.readAsString();
-      final configJson = jsonDecode(config) as Map<String, dynamic>;
-      final widgetsPath = configJson['widgetsPath'] as String;
-      final style = configJson['style'] as String;
+      final config = await ConfigReader.readConfig();
+      final widgetsPath = config.widgetsPath;
+      final style = config.style;
 
       await _spinnerHelper.runWithSpinner(
         message: 'Fetching widgets',
@@ -118,6 +117,8 @@ class ListCommand extends Command {
 
       _printResults(
           successfulDownloads, skippedDownloads, failedDownloads, widgetsPath);
+    } on InvalidConfigFileException catch (e) {
+      print('\n❌ ${e.message}');
     } catch (e, stackTrace) {
       print('\n❌ Unexpected error:');
       print(e);

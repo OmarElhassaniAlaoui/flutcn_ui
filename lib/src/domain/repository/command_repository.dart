@@ -13,6 +13,4 @@ abstract class CommandRepository {
   });
 
   Future<Either<Failure,List<WidgetEntity>>> list() ; 
-
-
 }

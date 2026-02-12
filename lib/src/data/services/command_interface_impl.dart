@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutcn_ui/src/core/services/api_service.dart';
 import 'package:flutcn_ui/src/data/models/init_config_model.dart';
@@ -15,49 +16,26 @@ class CommandInterfaceImpl implements CommandInterface {
   Future<void> init({
     required InitConfigModel config,
   }) async {
-    try {
-      // Create necessary directories
-      await _createDirectory(
-        config.themePath,
-      );
-      await _createDirectory(
-        config.widgetsPath,
-      );
+    // Create necessary directories
+    await _createDirectory(config.themePath);
+    await _createDirectory(config.widgetsPath);
 
-      // Create initial configuration file
-      await _createConfigFile(
-        config.widgetsPath,
-        config.themePath,
-        config.style,
-        config.baseColor,
-        // config.stateManagement,
-      );
+    // Fetch theme files from registry (can throw OfflineException,
+    // ThemeNotFoundException, etc. — these propagate to the repository)
+    await _fetchAndCreateTheme(
+      themePath: config.themePath,
+      style: config.style,
+      baseColor: config.baseColor.toLowerCase(),
+    );
 
-      await _fetchAndCreateTheme(
-        themePath: config.themePath,
-        style: config.style,
-        baseColor: config.baseColor.toLowerCase(),
-      );
-
-      if (config.installGoogleFonts) {
-        await _addGoogleFontsDependency();
-      }
-
-      // TODO: Add state management
-      // switch (config.stateManagement.toLowerCase()) {
-      //   case 'bloc':
-      //     await _setupStateManagement(config);
-      //     break;
-      //   case 'provider':
-      //     await _setupStateManagement(config);
-      //     break;
-      //   case 'riverpod':
-      //     await _setupStateManagement(config);
-      //     break;
-      // }
-    } catch (e) {
-      throw InitializationException();
+    if (config.installGoogleFonts) {
+      await _addGoogleFontsDependency();
     }
+
+    // Config file created LAST — only written if all operations above succeeded.
+    // This prevents a broken half-initialized state where config exists
+    // but theme files are missing.
+    await _createConfigFile(config);
   }
 
   Future<void> _createDirectory(String path) async {
@@ -67,23 +45,11 @@ class CommandInterfaceImpl implements CommandInterface {
     }
   }
 
-  Future<void> _createConfigFile(
-    String? widgetsPath,
-    String? themePath,
-    String? style,
-    String? baseColor,
-    // String? stateManagement,
-  ) async {
+  Future<void> _createConfigFile(InitConfigModel config) async {
     final file = File('flutcn.config.json');
     if (!file.existsSync()) {
-      await file.writeAsString('''
-          {
-            "widgetsPath": "$widgetsPath",
-            "themePath": "$themePath",
-            "style": "${style ?? 'default'}",
-            "baseColor": "${baseColor ?? 'slate'}"
-          }
-  ''');
+      final encoder = const JsonEncoder.withIndent('  ');
+      await file.writeAsString(encoder.convert(config.toJson()));
     }
   }
 
@@ -110,10 +76,18 @@ class CommandInterfaceImpl implements CommandInterface {
           headers: {'Content-Type': 'text/plain'},
         );
 
-        if (paletteResponse.status != 200 || themeResponse.status != 200) {
-          throw ServerException(
-              message:
-                  'Failed to fetch theme from API: Palette(${paletteResponse.status}), Theme(${themeResponse.status})');
+        if (paletteResponse.status != 200) {
+          throw ThemeNotFoundException(
+            message:
+                'Color scheme not found for style "$style" and color "$baseColor" (HTTP ${paletteResponse.status})',
+          );
+        }
+
+        if (themeResponse.status != 200) {
+          throw ThemeNotFoundException(
+            message:
+                'Theme not found for style "$style" (HTTP ${themeResponse.status})',
+          );
         }
 
         final appThemeFile = File('$themePath/app_theme.dart');
@@ -233,6 +207,12 @@ class CommandInterfaceImpl implements CommandInterface {
       },
     );
 
+    if (response.status != 200) {
+      throw ComponentNotFoundException(
+        message: 'Widget "${widget.name}" not found (HTTP ${response.status})',
+      );
+    }
+
     return WidgetModel(
       name: widget.name,
       link: widget.link,
@@ -242,32 +222,28 @@ class CommandInterfaceImpl implements CommandInterface {
 
   @override
   Future<List<WidgetModel>> list() async {
-    try {
-      final response = await apiService.get('/widgets',
-          headers: {'Content-Type': 'application/json'});
+    final response = await apiService.get('/widgets',
+        headers: {'Content-Type': 'application/json'});
 
-      if (response.status != 200) {
-        throw Exception('Failed to fetch widgets');
-      }
-
-      final Map<String, dynamic> data = response.body;
-
-      if (!data.containsKey('widgets')) {
-        print(
-            'Response does not contain "widgets" key. Available keys: ${data.keys.toList()}');
-        return [];
-      }
-
-      final List<dynamic> widgetsJson = data['widgets'] ?? [];
-
-      final List<WidgetModel> widgets = widgetsJson
-          .map((widgetJson) => WidgetModel.fromJSON(widgetJson))
-          .toList();
-
-      return widgets;
-    } catch (e) {
-      print('Error fetching widgets: $e');
-      return [];
+    if (response.status != 200) {
+      throw ServerException(
+        message: 'Failed to fetch widgets (HTTP ${response.status})',
+      );
     }
+
+    final Map<String, dynamic> data = response.body;
+
+    if (!data.containsKey('widgets')) {
+      throw ServerException(
+        message:
+            'Unexpected API response: missing "widgets" key',
+      );
+    }
+
+    final List<dynamic> widgetsJson = data['widgets'] ?? [];
+
+    return widgetsJson
+        .map((widgetJson) => WidgetModel.fromJSON(widgetJson))
+        .toList();
   }
 }
