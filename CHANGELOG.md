@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.5] - 2026-02-12
+
+### Fixed
+
+- Fix `InitUseCase` silently discarding repository failures (always returned success)
+- Catch `http.ClientException` for DNS/network failures (shows friendly offline message)
+- Remove blanket try-catch in `init()` that swallowed all error context
+- Move config file creation to last step in init (prevents broken half-initialized state)
+- Fix `Directory('flutcn.config.json')` check that always returned false
+
+### Added
+
+- Config field validation with clear error messages in `fromJson()`
+- Centralized `ConfigReader` utility replacing inline JSON parsing in commands
+- HTTP request timeouts (30 seconds) and offline detection
+- Granular exception-to-failure mapping in repository
+- Friendly error messages in spinner helper
+- Unit tests for entities, repository, and use cases (40 tests)
+
+### Changed
+
+- Use cases pass through `Either` from repositories (no unwrapping in domain layer)
+
 ## [1.1.4] - 2026-02-11
 
 ### Fixed
