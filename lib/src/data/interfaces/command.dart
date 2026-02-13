@@ -16,4 +16,9 @@ abstract class CommandInterface {
     required WidgetModel widget,
     required String widgetsPath,
   });
+
+  Future<WidgetModel> update({
+    required WidgetModel widget,
+    required String widgetsPath,
+  });
 }

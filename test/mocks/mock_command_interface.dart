@@ -54,4 +54,24 @@ class MockCommandInterface implements CommandInterface {
     lastRemoveWidgetsPath = widgetsPath;
     if (removeException != null) throw removeException!;
   }
+
+  Exception? updateException;
+  WidgetModel updateResult = const WidgetModel(
+    name: 'button',
+    link: '/widgets/button',
+    content: 'class Button { updated }',
+  );
+  WidgetModel? lastUpdateWidget;
+  String? lastUpdateWidgetsPath;
+
+  @override
+  Future<WidgetModel> update({
+    required WidgetModel widget,
+    required String widgetsPath,
+  }) async {
+    lastUpdateWidget = widget;
+    lastUpdateWidgetsPath = widgetsPath;
+    if (updateException != null) throw updateException!;
+    return updateResult;
+  }
 }

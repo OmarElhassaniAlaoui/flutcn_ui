@@ -263,4 +263,39 @@ class CommandInterfaceImpl implements CommandInterface {
         .map((widgetJson) => WidgetModel.fromJSON(widgetJson))
         .toList();
   }
+  
+  @override
+  Future<WidgetModel> update({
+    required WidgetModel widget,
+    required String widgetsPath,
+  }) async {
+    final filePath = '$widgetsPath/${widget.name}.dart';
+    final file = File(filePath);
+
+    if (!file.existsSync()) {
+      throw ComponentNotFoundException(
+        message: 'Widget "${widget.name}" is not installed at $filePath',
+      );
+    }
+
+    final response = await apiService.get(
+      widget.link!,
+      headers: {'Content-Type': 'text/plain'},
+    );
+
+    if (response.status != 200) {
+      throw ComponentNotFoundException(
+        message: 'Widget "${widget.name}" not found in registry (HTTP ${response.status})',
+      );
+    }
+
+    final content = response.body.toString();
+    await file.writeAsString(content);
+
+    return WidgetModel(
+      name: widget.name,
+      link: widget.link,
+      content: content,
+    );
+  }
 }

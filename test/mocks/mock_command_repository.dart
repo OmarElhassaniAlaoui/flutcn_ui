@@ -15,11 +15,16 @@ class MockCommandRepository implements CommandRepository {
   );
   Either<Failure, List<WidgetEntity>> listResult = const Right([]);
   Either<Failure, Unit> removeResult = const Right(unit);
+  Either<Failure, WidgetEntity> updateResult = const Right(
+    WidgetEntity(name: 'button', link: '/widgets/button', content: 'class Button {}'),
+  );
 
   InitConfigEntity? lastInitConfig;
   WidgetEntity? lastAddWidget;
   WidgetEntity? lastRemoveWidget;
   String? lastRemoveWidgetsPath;
+  WidgetEntity? lastUpdateWidget;
+  String? lastUpdateWidgetsPath;
 
   @override
   Future<Either<Failure, Unit>> initializeProject({
@@ -50,5 +55,15 @@ class MockCommandRepository implements CommandRepository {
     lastRemoveWidget = widget;
     lastRemoveWidgetsPath = widgetsPath;
     return removeResult;
+  }
+
+  @override
+  Future<Either<Failure, WidgetEntity>> update({
+    required WidgetEntity widget,
+    required String widgetsPath,
+  }) async {
+    lastUpdateWidget = widget;
+    lastUpdateWidgetsPath = widgetsPath;
+    return updateResult;
   }
 }

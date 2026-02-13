@@ -4,6 +4,7 @@ import 'package:flutcn_ui/src/data/services/api_service.dart';
 import 'package:flutcn_ui/src/domain/usecases/add_usecase.dart';
 import 'package:flutcn_ui/src/domain/usecases/list_usecase.dart';
 import 'package:flutcn_ui/src/domain/usecases/remove_usecase.dart';
+import 'package:flutcn_ui/src/domain/usecases/update_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutcn_ui/src/domain/usecases/init_usecase.dart';
 import 'package:flutcn_ui/src/data/repository/command_repository_impl.dart';
@@ -19,6 +20,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddUseCase(sl()));
   sl.registerLazySingleton(() => ListUseCase(sl()));
   sl.registerLazySingleton(() => RemoveUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateUseCase(sl()));
 
   // Repository
   sl.registerLazySingleton<CommandRepository>(

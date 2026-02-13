@@ -18,4 +18,9 @@ abstract class CommandRepository {
     required WidgetEntity widget,
     required String widgetsPath,
   });
+
+  Future<Either<Failure, WidgetEntity>> update({
+    required WidgetEntity widget,
+    required String widgetsPath,
+  });
 }

@@ -84,4 +84,26 @@ class CommandRepositoryImpl implements CommandRepository {
       return Left(GenericFailure(message: e.toString()));
     }
   }
+  
+  @override
+  Future<Either<Failure, WidgetEntity>> update({
+    required WidgetEntity widget,
+    required String widgetsPath,
+  }) async {
+    try {
+      final result = await commandInterface.update(
+        widget: widget.toModel(),
+        widgetsPath: widgetsPath,
+      );
+      return Right(result);
+    } on OfflineException {
+      return Left(OfflineFailure(message: 'No internet connection'));
+    } on ComponentNotFoundException catch (e) {
+      return Left(ComponentNotFoundFailure(message: e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(GenericFailure(message: e.toString()));
+    }
+  }
 }
