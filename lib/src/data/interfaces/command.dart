@@ -11,4 +11,9 @@ abstract class CommandInterface {
   });
 
   Future<List<WidgetModel>> list();
+
+  Future<void> remove({
+    required WidgetModel widget,
+    required String widgetsPath,
+  });
 }

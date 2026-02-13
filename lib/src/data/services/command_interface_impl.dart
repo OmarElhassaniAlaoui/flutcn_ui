@@ -221,6 +221,23 @@ class CommandInterfaceImpl implements CommandInterface {
   }
 
   @override
+  Future<void> remove({
+    required WidgetModel widget,
+    required String widgetsPath,
+  }) async {
+    final filePath = '$widgetsPath/${widget.name}.dart';
+    final file = File(filePath);
+
+    if (!file.existsSync()) {
+      throw ComponentNotFoundException(
+        message: 'Widget "${widget.name}" not found at $filePath',
+      );
+    }
+
+    await file.delete();
+  }
+
+  @override
   Future<List<WidgetModel>> list() async {
     final response = await apiService.get('/widgets',
         headers: {'Content-Type': 'application/json'});

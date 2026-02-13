@@ -40,4 +40,18 @@ class MockCommandInterface implements CommandInterface {
     if (listException != null) throw listException!;
     return listResult;
   }
+
+  Exception? removeException;
+  WidgetModel? lastRemoveWidget;
+  String? lastRemoveWidgetsPath;
+
+  @override
+  Future<void> remove({
+    required WidgetModel widget,
+    required String widgetsPath,
+  }) async {
+    lastRemoveWidget = widget;
+    lastRemoveWidgetsPath = widgetsPath;
+    if (removeException != null) throw removeException!;
+  }
 }
