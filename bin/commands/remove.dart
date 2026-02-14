@@ -62,7 +62,8 @@ class RemoveCommand extends Command {
   ) async {
     final file = File('$widgetsPath/$widgetName.dart');
     if (!file.existsSync()) {
-      print('\x1B[33m⚠ Widget "$widgetName" not found at $widgetsPath/$widgetName.dart\x1B[0m');
+      print(
+          '\x1B[33m⚠ Widget "$widgetName" not found at $widgetsPath/$widgetName.dart\x1B[0m');
       return;
     }
 

@@ -239,8 +239,8 @@ class CommandInterfaceImpl implements CommandInterface {
 
   @override
   Future<List<WidgetModel>> list() async {
-    final response = await apiService.get('/widgets',
-        headers: {'Content-Type': 'application/json'});
+    final response = await apiService
+        .get('/widgets', headers: {'Content-Type': 'application/json'});
 
     if (response.status != 200) {
       throw ServerException(
@@ -252,8 +252,7 @@ class CommandInterfaceImpl implements CommandInterface {
 
     if (!data.containsKey('widgets')) {
       throw ServerException(
-        message:
-            'Unexpected API response: missing "widgets" key',
+        message: 'Unexpected API response: missing "widgets" key',
       );
     }
 
@@ -263,7 +262,7 @@ class CommandInterfaceImpl implements CommandInterface {
         .map((widgetJson) => WidgetModel.fromJSON(widgetJson))
         .toList();
   }
-  
+
   @override
   Future<WidgetModel> update({
     required WidgetModel widget,
@@ -285,7 +284,8 @@ class CommandInterfaceImpl implements CommandInterface {
 
     if (response.status != 200) {
       throw ComponentNotFoundException(
-        message: 'Widget "${widget.name}" not found in registry (HTTP ${response.status})',
+        message:
+            'Widget "${widget.name}" not found in registry (HTTP ${response.status})',
       );
     }
 

@@ -36,7 +36,7 @@ Future<void> init() async {
 
   sl.registerLazySingleton<ApiService>(
     () => HttpServiceImpl(
-      baseUrl:  ApiConstants.baseProdUrl,
+      baseUrl: ApiConstants.baseProdUrl,
     ),
   );
 }

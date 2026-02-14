@@ -91,7 +91,7 @@ class ListCommand extends Command {
               }
 
               print("Downloading ${widget.name}...");
-              
+
               final result = await addUseCase(
                 widget: WidgetEntity(
                   name: widgetName,
