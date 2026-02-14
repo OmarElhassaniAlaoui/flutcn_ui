@@ -178,6 +178,10 @@ When CLI runs `add`:
 
 Always commit before running `git flow release/hotfix finish` — finishing without committing leaves changes staged on the target branch with no tag created.
 
+## Git Remote Operations
+
+SSH key requires a passphrase. Claude Code cannot enter passphrases interactively. When you need to push, pull, fetch, or do anything that requires remote Git access, **tell the user the exact command** and let them run it manually.
+
 ## CI/CD
 
 ### Workflows (`.github/workflows/`)

@@ -1,6 +1,5 @@
+import 'package:example/themes/app_palette.dart';
 import 'package:flutter/material.dart';
-import '../themes/app_palette.dart';
-
 // Helper class for button colors
 class ButtonColors {
   final Color background;
