@@ -10,6 +10,8 @@
 - `init` — Set up project with `flutcn.config.json`, generate theme files
 - `add` — Download and install widgets (single or batch)
 - `list` — Browse and install available widgets interactively
+- `remove` — Uninstall widgets by deleting local `.dart` files
+- `update` — Refresh installed widgets from the registry
 
 ## 2. Architecture
 
@@ -83,7 +85,7 @@ No circular dependencies detected.
 |---------|---------|---------|
 | `build_runner` | `^2.4.6` | Code generation (prepared, not actively used) |
 | `lints` | `^5.0.0` | `package:lints/recommended.yaml` lint rules |
-| `test` | `^1.24.0` | Test framework — 40 unit tests for entities, repository, and use cases |
+| `test` | `^1.24.0` | Test framework — 47 unit tests for entities, repository, and use cases |
 
 ## 4. CLI Commands
 
@@ -116,6 +118,21 @@ No circular dependencies detected.
 - Shows interactive multi-select interface
 - Checks for existing files before writing (overwrite/skip/cancel)
 - Prints color-coded summary: green (success), yellow (skipped), red (failed)
+
+### `remove` (added in v1.2.0)
+- **Direct mode:** `flutcn_ui remove button` — deletes widget file with confirmation prompt
+- **Interactive mode:** `flutcn_ui remove` — shows multi-select of installed widgets
+- `--force` / `-f` flag to skip confirmation prompt
+- Checks widget exists at `$widgetsPath/$widgetName.dart` before deleting
+- Color-coded output: green (removed), red (errors), yellow (not found)
+
+### `update` (added in v1.2.0)
+- **Direct mode:** `flutcn_ui update button` — re-downloads widget from registry
+- **Interactive mode:** `flutcn_ui update` — shows multi-select of installed widgets
+- `--all` / `-a` flag to update all installed widgets without selection
+- Checks widget exists locally before fetching from registry
+- Re-downloads and overwrites local `.dart` file with latest registry version
+- No versioning — simple "re-fetch and overwrite" (designed to accommodate versioning later)
 
 ## 5. API Integration
 
@@ -164,7 +181,7 @@ No circular dependencies detected.
 - **Visual feedback** — spinners with friendly error messages, color-coded output, interactive selection
 - **Singleton DI** — lazy registration prevents unnecessary initialization
 - **CI/CD pipeline** — automated analysis, release tagging, and pub.dev publishing
-- **Unit tests** — 40 tests covering entities, repository exception mapping, and use case passthrough
+- **Unit tests** — 47 tests covering entities, repository exception mapping, and use case passthrough
 
 ## 8. Bugs & Issues (Fixed)
 
@@ -218,7 +235,6 @@ Two root causes: (1) blanket `catch(e) { throw InitializationException(); }` con
 ### Empty use case files (placeholders)
 - `lib/src/domain/usecases/add_theme_usecase.dart` — empty
 - `lib/src/domain/usecases/search_usecase.dart` — empty
-- `lib/src/domain/usecases/update_usecase.dart` — empty
 
 ### Legacy constant
 - `lib/src/core/constants/app_constants.dart` — contains `baseUrl = 'https://flutcn.com/api/v1'` which is never referenced
@@ -264,6 +280,7 @@ State management selection is prepared across multiple files but fully commented
 - CI excludes `example/` during `dart pub get` (Flutter project requires Flutter SDK, CI only has Dart)
 - `release.yml` skips if tag already exists (relevant when using git flow which creates tags locally)
 - Publish requires `PUB_CREDENTIALS` GitHub secret for pub.dev authentication
+- **Known limitation:** Tags created by `GITHUB_TOKEN` in `release.yml` do not trigger `publish.yml` (GitHub prevents workflow chaining). Workaround: manually delete and re-push the tag, or use a Personal Access Token (PAT) in `release.yml`
 
 ### Version Bump Script
 `scripts/bump_version.sh` — updates version in `pubspec.yaml` and creates a CHANGELOG entry.
@@ -282,7 +299,7 @@ State management selection is prepared across multiple files but fully commented
 - [x] Fix `Directory('flutcn.config.json')` check always returning false
 
 ### Priority 2 — Code Hygiene
-- [ ] Remove empty use case files or implement them
+- [ ] Remove empty use case files or implement them (`add_theme_usecase.dart`, `search_usecase.dart`)
 - [ ] Remove unused `AppConstants.baseUrl`
 - [ ] Either implement state management feature or remove commented code
 
@@ -318,7 +335,9 @@ flutcn_ui/
 │   └── commands/
 │       ├── init.dart                  # Init command (131 LOC)
 │       ├── add.dart                   # Add command (186 LOC)
-│       └── list.dart                  # List command (164 LOC)
+│       ├── list.dart                  # List command (164 LOC)
+│       ├── remove.dart               # Remove command (v1.2.0)
+│       └── update.dart               # Update command (v1.2.0)
 ├── lib/src/
 │   ├── core/
 │   │   ├── constants/
@@ -352,7 +371,7 @@ flutcn_ui/
 │   │   │   └── command_repository_impl.dart  # Either-wrapping adapter
 │   │   └── services/
 │   │       ├── api_service.dart       # HTTP implementation with timeout/offline detection
-│   │       └── command_interface_impl.dart   # Core logic (init, add, list)
+│   │       └── command_interface_impl.dart   # Core logic (init, add, list, remove, update)
 │   └── domain/
 │       ├── entities/
 │       │   ├── init_config_entity.dart
@@ -366,8 +385,9 @@ flutcn_ui/
 │           ├── add_usecase.dart
 │           ├── init_usecase.dart
 │           ├── list_usecase.dart
+│           ├── remove_usecase.dart     # Remove use case (v1.2.0)
 │           ├── search_usecase.dart     # Empty placeholder
-│           └── update_usecase.dart     # Empty placeholder
+│           └── update_usecase.dart     # Update use case (v1.2.0)
 ├── example/                           # Demo Flutter app
 │   ├── lib/
 │   │   ├── main.dart
@@ -389,7 +409,9 @@ flutcn_ui/
 │       └── usecases/
 │           ├── init_usecase_test.dart          # 4 tests
 │           ├── add_usecase_test.dart           # 3 tests
-│           └── list_usecase_test.dart          # 4 tests
+│           ├── list_usecase_test.dart          # 4 tests
+│           ├── remove_usecase_test.dart        # 3 tests (v1.2.0)
+│           └── update_usecase_test.dart        # 4 tests (v1.2.0)
 ├── scripts/
 │   └── bump_version.sh                # Version bump utility
 ├── reports/
