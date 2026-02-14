@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-02-14
+
+### Added
+
+- Widget versioning via `flutcn.lock.json` — tracks installed widgets with SHA-256 content hashes
+  - `init` creates empty lockfile alongside config
+  - `add` / `list` record widget hashes after download
+  - `remove` deletes widget entry from lockfile
+  - `update` compares hashes: shows up-to-date, updated, or newly tracked per widget
+  - `list` shows install status: [installed], [modified locally], [installed - untracked]
+- `crypto` dependency for SHA-256 hashing
+- `LockfileManager` utility class (`lib/src/core/utils/lockfile_manager.dart`)
+- 17 new unit tests for lockfile manager (64 total)
+- Updated README with remove, update, and widget versioning documentation
+
 ## [1.2.0] - 2026-02-14
 
 ### Added
