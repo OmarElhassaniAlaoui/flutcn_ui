@@ -12,5 +12,15 @@ abstract class CommandRepository {
     required WidgetEntity widget,
   });
 
-  Future<Either<Failure,List<WidgetEntity>>> list() ; 
+  Future<Either<Failure,List<WidgetEntity>>> list() ;
+
+  Future<Either<Failure, Unit>> remove({
+    required WidgetEntity widget,
+    required String widgetsPath,
+  });
+
+  Future<Either<Failure, WidgetEntity>> update({
+    required WidgetEntity widget,
+    required String widgetsPath,
+  });
 }

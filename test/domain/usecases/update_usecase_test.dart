@@ -1,0 +1,100 @@
+import 'package:dartz/dartz.dart';
+import 'package:flutcn_ui/src/core/errors/failures.dart';
+import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
+import 'package:flutcn_ui/src/domain/usecases/update_usecase.dart';
+import 'package:test/test.dart';
+
+import '../../mocks/mock_command_repository.dart';
+
+void main() {
+  late MockCommandRepository mockRepository;
+  late UpdateUseCase useCase;
+
+  const testWidget = WidgetEntity(
+    name: 'button',
+    link: '/widgets/new-york/button',
+  );
+  const testWidgetsPath = 'lib/widgets';
+
+  setUp(() {
+    mockRepository = MockCommandRepository();
+    useCase = UpdateUseCase(mockRepository);
+  });
+
+  group('UpdateUseCase', () {
+    test('returns Right(WidgetEntity) on success', () async {
+      const expected = WidgetEntity(
+        name: 'button',
+        link: '/widgets/new-york/button',
+        content: 'class Button { updated }',
+      );
+      mockRepository.updateResult = const Right(expected);
+
+      final result = await useCase.call(
+        widget: testWidget,
+        widgetsPath: testWidgetsPath,
+      );
+
+      result.fold(
+        (_) => fail('Expected Right'),
+        (widget) {
+          expect(widget.name, 'button');
+          expect(widget.content, 'class Button { updated }');
+        },
+      );
+      expect(mockRepository.lastUpdateWidget, testWidget);
+      expect(mockRepository.lastUpdateWidgetsPath, testWidgetsPath);
+    });
+
+    test('passes through OfflineFailure from repository', () async {
+      mockRepository.updateResult = Left(
+        OfflineFailure(message: 'No internet connection'),
+      );
+
+      final result = await useCase.call(
+        widget: testWidget,
+        widgetsPath: testWidgetsPath,
+      );
+
+      result.fold(
+        (failure) => expect(failure, isA<OfflineFailure>()),
+        (_) => fail('Expected Left'),
+      );
+    });
+
+    test('passes through ComponentNotFoundFailure from repository', () async {
+      mockRepository.updateResult = Left(
+        ComponentNotFoundFailure(message: 'Widget "button" is not installed'),
+      );
+
+      final result = await useCase.call(
+        widget: testWidget,
+        widgetsPath: testWidgetsPath,
+      );
+
+      result.fold(
+        (failure) {
+          expect(failure, isA<ComponentNotFoundFailure>());
+          expect(failure.message, contains('button'));
+        },
+        (_) => fail('Expected Left'),
+      );
+    });
+
+    test('passes through ServerFailure from repository', () async {
+      mockRepository.updateResult = Left(
+        ServerFailure(message: 'Internal server error'),
+      );
+
+      final result = await useCase.call(
+        widget: testWidget,
+        widgetsPath: testWidgetsPath,
+      );
+
+      result.fold(
+        (failure) => expect(failure, isA<ServerFailure>()),
+        (_) => fail('Expected Left'),
+      );
+    });
+  });
+}

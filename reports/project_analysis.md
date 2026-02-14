@@ -1,6 +1,6 @@
 # Flutcn UI Project Analysis
 
-> **Version analyzed:** 1.1.4 | **Dart files:** 43 | **LOC (lib/src/):** ~1,090 | **Branch:** dev
+> **Version analyzed:** 1.2.0 | **Dart files:** 46 | **LOC (lib/src/):** ~1,200 | **Branch:** dev
 
 ## 1. Project Overview
 
@@ -71,7 +71,7 @@ No circular dependencies detected.
 | `cli_spin` | `^1.0.1` | Spinner animations for async operations |
 | `dartz` | `^0.10.1` | `Either<L, R>` functional error handling |
 | `equatable` | `^2.0.7` | Value equality for entities |
-| `get_it` | `^8.0.3` | Service locator / DI container |
+| `get_it` | `^9.0.0` | Service locator / DI container |
 | `http` | `^1.3.0` | HTTP client for registry API |
 | `io` | `^1.0.5` | Console I/O utilities |
 | `path` | `^1.8.0` | Cross-platform path manipulation |
@@ -83,7 +83,7 @@ No circular dependencies detected.
 |---------|---------|---------|
 | `build_runner` | `^2.4.6` | Code generation (prepared, not actively used) |
 | `lints` | `^5.0.0` | `package:lints/recommended.yaml` lint rules |
-| `test` | `^1.24.0` | Test framework (present but unused) |
+| `test` | `^1.24.0` | Test framework — 40 unit tests for entities, repository, and use cases |
 
 ## 4. CLI Commands
 
@@ -131,6 +131,7 @@ No circular dependencies detected.
 - No authentication required (public API)
 - Response wrapper: `ApiResponse` (body, statusCode, message)
 - Dev URL available (`localhost:3000`) but not used in production builds
+- HTTP requests have 30-second timeout, offline/DNS failures detected and reported with friendly messages
 
 ## 6. Configuration Management
 
@@ -145,24 +146,29 @@ No circular dependencies detected.
 }
 ```
 
-- Created by `init` command
+- Created by `init` command (written last, after theme fetch succeeds — prevents broken half-initialized state)
 - Required before `add` or `list` commands
 - Entity (`InitConfigEntity`) supports JSON serialization
-- **No schema validation** — config values are trusted as-is
+- **Schema validation** — `fromJson()` validates all required fields with type checks and clear error messages
+- **Centralized reading** — `ConfigReader` utility handles file existence, JSON parsing, and validation errors
 
 ## 7. Code Quality — Strengths
 
 - **Clean Architecture** — proper layer separation, no layer violations
 - **Functional error handling** — `Either<Failure, T>` consistently used across all use cases
 - **Comprehensive failure types** — 10 specific failure classes for different error scenarios
+- **Granular exception mapping** — repository catches `OfflineException`, `ThemeNotFoundException`, `ServerException`, `ComponentNotFoundException`, `InvalidConfigFileException` and maps each to typed `Failure`
+- **Config validation** — `fromJson()` validates required fields with type checks and clear error messages
+- **Network resilience** — 30s timeouts, offline detection (catches `SocketException` + `http.ClientException`), friendly error messages in spinners
 - **Cross-platform CLI UX** — platform-aware keyboard handling (Windows vs. Mac/Linux key codes)
-- **Visual feedback** — spinners, color-coded output, interactive selection
+- **Visual feedback** — spinners with friendly error messages, color-coded output, interactive selection
 - **Singleton DI** — lazy registration prevents unnecessary initialization
 - **CI/CD pipeline** — automated analysis, release tagging, and pub.dev publishing
+- **Unit tests** — 40 tests covering entities, repository exception mapping, and use case passthrough
 
 ## 8. Bugs & Issues (Fixed)
 
-All bugs identified in the original analysis have been resolved in v1.1.3 and v1.1.4:
+All bugs identified have been resolved in v1.1.3, v1.1.4, and v1.1.5:
 
 ### ~~Bug: API Service `get()` missing base URL~~ — Fixed in v1.1.3
 **File:** `lib/src/data/services/api_service.dart`
@@ -187,6 +193,26 @@ All bugs identified in the original analysis have been resolved in v1.1.3 and v1
 ### ~~Issue: google_fonts in CLI dependencies~~ — Fixed in v1.1.4
 `google_fonts` was listed as a CLI dependency but never imported — it's only written as a string to the user's `pubspec.yaml`. Removed to fix Dart SDK version conflict in CI.
 
+### ~~Bug: InitUseCase silently discarding failures~~ — Fixed in v1.1.5
+**File:** `lib/src/domain/usecases/init_usecase.dart`
+
+`InitUseCase.call()` did `await repository.initializeProject()` but discarded the `Either` result and always returned `Right(unit)`. Offline errors, theme-not-found errors, etc. were silently swallowed. Now passes through `Either` directly like `AddUseCase` and `ListUseCase`.
+
+### ~~Bug: ClientException not caught for offline detection~~ — Fixed in v1.1.5
+**File:** `lib/src/data/services/api_service.dart`
+
+The Dart `http` package wraps `SocketException` in `ClientException` for DNS/network failures. Only catching `SocketException` missed these. Added `on http.ClientException` catch in `_withErrorHandling()`.
+
+### ~~Bug: Init shows success after theme fetch failure~~ — Fixed in v1.1.5
+**Files:** `lib/src/data/services/command_interface_impl.dart`, `lib/src/data/repository/command_repository_impl.dart`
+
+Two root causes: (1) blanket `catch(e) { throw InitializationException(); }` converted all exceptions to generic type, preventing specific exception routing in repository; (2) config file was created before theme fetch, leaving broken half-initialized state. Fixed by removing blanket catch and moving config creation to last step.
+
+### ~~Bug: Directory check for config file always false~~ — Fixed in v1.1.5
+**File:** `bin/commands/init.dart`
+
+`Directory('flutcn.config.json').existsSync()` always returned false because it checked for a directory, not a file. Replaced with `ConfigReader.configExists()`.
+
 ## 9. Unused & Commented-Out Code
 
 ### Empty use case files (placeholders)
@@ -205,18 +231,24 @@ State management selection is prepared across multiple files but fully commented
 
 ## 10. Test Coverage
 
-**Current state: Minimal**
+**Current state: 47 unit tests (40 in v1.1.5, 7 added in v1.2.0)**
 
-- Only file: `example/test/widget_test.dart` (default Flutter template)
-- No unit tests for use cases, repositories, or services
-- No integration tests for CLI commands
-- `test` package is in dev dependencies but unused
+| Test file | Tests | Coverage |
+|-----------|-------|----------|
+| `test/domain/entities/init_config_entity_test.dart` | 12 | `fromJson` validation, defaults, round-trip, equality |
+| `test/data/repository/command_repository_impl_test.dart` | 15 | Exception→Failure mapping for `initializeProject`, `add`, `list` |
+| `test/domain/usecases/init_usecase_test.dart` | 4 | Success + failure propagation |
+| `test/domain/usecases/add_usecase_test.dart` | 3 | Success + failure propagation |
+| `test/domain/usecases/list_usecase_test.dart` | 4 | Success + empty list + failure propagation |
+| `test/domain/usecases/remove_usecase_test.dart` | 3 | Success + ComponentNotFoundFailure + GenericFailure |
+| `test/domain/usecases/update_usecase_test.dart` | 4 | Success + OfflineFailure + ComponentNotFoundFailure + ServerFailure |
+| **Mock classes** | — | `test/mocks/mock_command_interface.dart`, `test/mocks/mock_command_repository.dart` |
 
-**Recommended test priorities:**
-1. Use cases (pure business logic, easy to test)
-2. Repository implementations (mock API service)
-3. CLI commands (integration tests with mock DI)
-4. API service (HTTP response handling)
+**Not yet tested:**
+- CLI commands (integration tests with mock DI)
+- API service (HTTP response handling, timeout/offline behavior)
+- `ConfigReader` (file I/O, JSON parsing errors)
+- `CommandInterfaceImpl` (file creation, theme fetching)
 
 ## 11. CI/CD Pipeline
 
@@ -238,26 +270,36 @@ State management selection is prepared across multiple files but fully commented
 
 ## 12. Improvement Recommendations
 
-### ~~Priority 1 — Fix Bugs~~ — All Done (v1.1.3, v1.1.4)
+### ~~Priority 1 — Fix Bugs~~ — All Done (v1.1.3, v1.1.4, v1.1.5)
 - [x] Fix `get()` method in `HttpServiceImpl` to prepend `baseUrl`
 - [x] Fix `widgetsPaht` typo in `command_interface_impl.dart`
 - [x] Rename misspelled files (`qestions.dart`, `app_pallete.dart`, `checko_box_chooser.dart`)
 - [x] Fix `ListUseCase` to return `Either` instead of throwing
 - [x] Remove unused `google_fonts` from CLI dependencies
+- [x] Fix `InitUseCase` silently discarding repository failures
+- [x] Fix `ClientException` not caught for offline detection
+- [x] Fix init showing success after theme fetch failure
+- [x] Fix `Directory('flutcn.config.json')` check always returning false
 
 ### Priority 2 — Code Hygiene
 - [ ] Remove empty use case files or implement them
 - [ ] Remove unused `AppConstants.baseUrl`
 - [ ] Either implement state management feature or remove commented code
 
-### Priority 3 — Reliability
-- [ ] Add unit tests for use cases and repositories
-- [ ] Add config file schema validation
-- [ ] Add offline fallback / graceful error when registry is unreachable
+### ~~Priority 3 — Reliability~~ — All Done (v1.1.5)
+- [x] Add unit tests for use cases and repositories (40 tests)
+- [x] Add config file schema validation (`fromJson()` + `ConfigReader`)
+- [x] Add offline fallback / graceful error when registry is unreachable (timeouts, `ClientException` catch, friendly messages)
 
-### Priority 4 — Features
-- [ ] `remove` command — uninstall widgets
-- [ ] `update` command — update installed widgets
+### Priority 4 — More Tests
+- [ ] Integration tests for CLI commands (mock DI container)
+- [ ] `ConfigReader` tests (file I/O, JSON parsing errors)
+- [ ] `CommandInterfaceImpl` tests (file creation, HTTP status handling)
+- [ ] `HttpServiceImpl` tests (timeout, offline detection)
+
+### Priority 5 — Features
+- [x] `remove` command — uninstall widgets (v1.2.0)
+- [x] `update` command — update installed widgets (v1.2.0)
 - [ ] Widget versioning — track installed versions
 - [ ] `--path` option on `add` command — override default widget directory
 - [ ] Dependency resolution for widget inter-dependencies
@@ -295,8 +337,9 @@ flutcn_ui/
 │   │   │   └── usecase.dart           # Base UseCase<Type, Params>
 │   │   └── utils/
 │   │       ├── checkbox_chooser.dart  # Interactive multi-select UI
+│   │       ├── config_reader.dart     # Centralized config file reading/validation
 │   │       ├── highlighter.dart       # ANSI color extension
-│   │       └── spinners.dart          # Async spinner wrapper
+│   │       └── spinners.dart          # Async spinner wrapper with friendly errors
 │   ├── data/
 │   │   ├── interfaces/
 │   │   │   └── command.dart           # Data source contract
@@ -308,8 +351,8 @@ flutcn_ui/
 │   │   ├── repository/
 │   │   │   └── command_repository_impl.dart  # Either-wrapping adapter
 │   │   └── services/
-│   │       ├── api_service.dart       # HTTP implementation (109 LOC)
-│   │       └── command_interface_impl.dart   # Core logic (276 LOC)
+│   │       ├── api_service.dart       # HTTP implementation with timeout/offline detection
+│   │       └── command_interface_impl.dart   # Core logic (init, add, list)
 │   └── domain/
 │       ├── entities/
 │       │   ├── init_config_entity.dart
@@ -334,6 +377,19 @@ flutcn_ui/
 │   │   ├── themes/                    # Generated theme files
 │   │   └── widgets/                   # Generated widget files
 │   └── test/                          # Template test only
+├── test/
+│   ├── mocks/
+│   │   ├── mock_command_interface.dart    # Manual mock for CommandInterface
+│   │   └── mock_command_repository.dart   # Manual mock for CommandRepository
+│   ├── data/repository/
+│   │   └── command_repository_impl_test.dart  # 15 exception mapping tests
+│   └── domain/
+│       ├── entities/
+│       │   └── init_config_entity_test.dart   # 12 validation tests
+│       └── usecases/
+│           ├── init_usecase_test.dart          # 4 tests
+│           ├── add_usecase_test.dart           # 3 tests
+│           └── list_usecase_test.dart          # 4 tests
 ├── scripts/
 │   └── bump_version.sh                # Version bump utility
 ├── reports/

@@ -54,12 +54,52 @@ class CommandRepositoryImpl implements CommandRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> remove({
+    required WidgetEntity widget,
+    required String widgetsPath,
+  }) async {
+    try {
+      await commandInterface.remove(
+        widget: widget.toModel(),
+        widgetsPath: widgetsPath,
+      );
+      return const Right(unit);
+    } on ComponentNotFoundException catch (e) {
+      return Left(ComponentNotFoundFailure(message: e.message));
+    } catch (e) {
+      return Left(GenericFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<WidgetModel>>> list() async {
     try {
       final widgets = await commandInterface.list();
       return Right(widgets);
     } on OfflineException {
       return Left(OfflineFailure(message: 'No internet connection'));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(GenericFailure(message: e.toString()));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, WidgetEntity>> update({
+    required WidgetEntity widget,
+    required String widgetsPath,
+  }) async {
+    try {
+      final result = await commandInterface.update(
+        widget: widget.toModel(),
+        widgetsPath: widgetsPath,
+      );
+      return Right(result);
+    } on OfflineException {
+      return Left(OfflineFailure(message: 'No internet connection'));
+    } on ComponentNotFoundException catch (e) {
+      return Left(ComponentNotFoundFailure(message: e.message));
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } catch (e) {
