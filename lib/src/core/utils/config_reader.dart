@@ -13,8 +13,7 @@ class ConfigReader {
 
     if (!file.existsSync()) {
       throw InvalidConfigFileException(
-        message:
-            'Config file not found. Run "flutcn_ui init" first.',
+        message: 'Config file not found. Run "flutcn_ui init" first.',
       );
     }
 

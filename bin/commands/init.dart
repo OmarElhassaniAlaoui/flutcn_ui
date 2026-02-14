@@ -93,7 +93,7 @@ class InitCommand extends Command {
         widgetsPath: widgetsPath,
         style: style,
         baseColor: baseColor,
-        installGoogleFonts: installGoogleFonts , 
+        installGoogleFonts: installGoogleFonts,
         // stateManagement: stateManagement,
       ),
     );

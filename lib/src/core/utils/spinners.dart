@@ -2,7 +2,6 @@ import 'package:cli_spin/cli_spin.dart';
 import 'package:flutcn_ui/src/core/errors/exceptions.dart';
 
 class SpinnerHelper {
-
   CliSpin? _spinner;
 
   /// Starts a spinner with a given message

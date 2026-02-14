@@ -8,8 +8,7 @@ class ApiResponse {
   dynamic body;
   int? status;
   String? message;
-} 
-
+}
 
 abstract class ApiService {
   Future<ApiResponse> get(

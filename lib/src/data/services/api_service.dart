@@ -109,7 +109,8 @@ class HttpServiceImpl extends ApiService {
       // for DNS failures, connection refused, etc.
       throw OfflineException();
     } on TimeoutException {
-      throw ServerException(message: 'Request timed out after ${_timeout.inSeconds} seconds');
+      throw ServerException(
+          message: 'Request timed out after ${_timeout.inSeconds} seconds');
     }
   }
 

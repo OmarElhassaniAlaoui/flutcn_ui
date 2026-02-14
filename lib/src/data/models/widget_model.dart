@@ -15,8 +15,8 @@ class WidgetModel extends WidgetEntity {
       content: json['content'],
       style: json['style'],
     );
-  } 
-  
+  }
+
   @override
   Map<String, dynamic> toJson() => {
         'name': name,

@@ -64,6 +64,7 @@ class InvalidComponentFileException implements Exception {
   @override
   String toString() => 'InvalidComponentFileException: $message';
 }
+
 class InitializationException implements Exception {
   final String message;
   InitializationException([this.message = 'Failed to initialize project']);

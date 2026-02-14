@@ -44,6 +44,7 @@ class InvalidComponentFileFailure extends Failure {
 class GenericFailure extends Failure {
   GenericFailure({required super.message});
 }
+
 class InitializationFailure extends Failure {
   InitializationFailure() : super(message: 'Failed to initialize project');
 }

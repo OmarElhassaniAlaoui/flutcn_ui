@@ -39,7 +39,8 @@ class InitConfigEntity extends Equatable {
         json['installGoogleFonts'] != null &&
         json['installGoogleFonts'] is! bool) {
       throw InvalidConfigFileException(
-        message: 'Field "installGoogleFonts" must be a boolean in flutcn.config.json',
+        message:
+            'Field "installGoogleFonts" must be a boolean in flutcn.config.json',
       );
     }
 

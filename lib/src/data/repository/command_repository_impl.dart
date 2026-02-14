@@ -84,7 +84,7 @@ class CommandRepositoryImpl implements CommandRepository {
       return Left(GenericFailure(message: e.toString()));
     }
   }
-  
+
   @override
   Future<Either<Failure, WidgetEntity>> update({
     required WidgetEntity widget,
