@@ -3,6 +3,7 @@ import 'package:args/command_runner.dart';
 import 'package:flutcn_ui/src/core/errors/exceptions.dart';
 import 'package:flutcn_ui/src/core/utils/checkbox_chooser.dart';
 import 'package:flutcn_ui/src/core/utils/config_reader.dart';
+import 'package:flutcn_ui/src/core/utils/lockfile_manager.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
 import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
@@ -70,6 +71,7 @@ class UpdateCommand extends Command {
     }
 
     final updateUseCase = di.sl<UpdateUseCase>();
+    late String status;
 
     await _spinnerHelper.runWithSpinner(
       message: 'Updating $widgetName widget',
@@ -83,15 +85,18 @@ class UpdateCommand extends Command {
         );
         result.fold(
           (failure) => throw Exception(failure.message),
-          (_) {},
+          (updatedWidget) {
+            status = _detectChangeStatus(widgetName, updatedWidget.content!);
+            LockfileManager.recordWidget(
+                widgetName, config.style, updatedWidget.content!);
+          },
         );
       },
       onError: 'Error updating widget',
-      onSuccess: 'Updated $widgetName widget',
+      onSuccess: 'Checked $widgetName widget',
     );
 
-    print('\n\x1B[32m✔ Successfully updated: $widgetName.dart\x1B[0m');
-    print('Updated in: \x1B[36m$widgetsPath/\x1B[0m');
+    _printSingleStatus(widgetName, status, widgetsPath);
   }
 
   Future<void> _handleUpdateAll(
@@ -127,7 +132,7 @@ class UpdateCommand extends Command {
     InitConfigEntity config,
   ) async {
     final updateUseCase = di.sl<UpdateUseCase>();
-    List<String> successes = [];
+    Map<String, String> statuses = {};
     List<String> failures = [];
 
     await _spinnerHelper.runWithSpinner(
@@ -144,7 +149,12 @@ class UpdateCommand extends Command {
             );
             result.fold(
               (failure) => throw Exception(failure.message),
-              (_) => successes.add(widgetName),
+              (updatedWidget) {
+                statuses[widgetName] =
+                    _detectChangeStatus(widgetName, updatedWidget.content!);
+                LockfileManager.recordWidget(
+                    widgetName, config.style, updatedWidget.content!);
+              },
             );
           } catch (e) {
             failures.add(widgetName);
@@ -153,7 +163,62 @@ class UpdateCommand extends Command {
       },
     );
 
-    _printResults(successes, failures, widgetsPath);
+    _printBatchResults(statuses, failures, widgetsPath);
+  }
+
+  /// Compares fetched content against lockfile hash to determine change status.
+  String _detectChangeStatus(String widgetName, String newContent) {
+    final entry = LockfileManager.getWidget(widgetName);
+    if (entry == null) return 'newly tracked';
+
+    final oldHash = entry['contentHash'] as String?;
+    final newHash = LockfileManager.computeHash(newContent);
+    return oldHash == newHash ? 'up-to-date' : 'updated';
+  }
+
+  void _printSingleStatus(
+      String widgetName, String status, String widgetsPath) {
+    switch (status) {
+      case 'up-to-date':
+        print('\n\x1B[32m✔ $widgetName: already up-to-date\x1B[0m');
+      case 'updated':
+        print('\n\x1B[36m↑ $widgetName: updated with latest changes\x1B[0m');
+      case 'newly tracked':
+        print(
+            '\n\x1B[33m⚡ $widgetName: updated (now tracked in lockfile)\x1B[0m');
+    }
+    print('Location: \x1B[36m$widgetsPath/\x1B[0m');
+  }
+
+  void _printBatchResults(
+    Map<String, String> statuses,
+    List<String> failures,
+    String widgetsPath,
+  ) {
+    if (statuses.isNotEmpty) {
+      print('');
+      for (final entry in statuses.entries) {
+        switch (entry.value) {
+          case 'up-to-date':
+            print('\x1B[32m  ✔ ${entry.key}: already up-to-date\x1B[0m');
+          case 'updated':
+            print(
+                '\x1B[36m  ↑ ${entry.key}: updated with latest changes\x1B[0m');
+          case 'newly tracked':
+            print(
+                '\x1B[33m  ⚡ ${entry.key}: updated (now tracked in lockfile)\x1B[0m');
+        }
+      }
+    }
+
+    if (failures.isNotEmpty) {
+      print(
+          '\n\x1B[31m✖ Failed to update:\n${failures.map((n) => '  • $n').join('\n')}\x1B[0m');
+    }
+
+    if (statuses.isNotEmpty) {
+      print('\nUpdated in: \x1B[36m$widgetsPath/\x1B[0m');
+    }
   }
 
   List<String>? _getInstalledWidgets(String widgetsPath) {
@@ -181,24 +246,5 @@ class UpdateCommand extends Command {
   String _buildWidgetUrl(String widgetName,
       {required InitConfigEntity config}) {
     return "/widgets/${config.style}/$widgetName";
-  }
-
-  void _printResults(
-      List<String> successes, List<String> failures, String widgetsPath) {
-    final successMessage = successes.isNotEmpty
-        ? '\n\x1B[32m✔ Successfully updated:'
-            '\n${successes.map((n) => '  • $n.dart').join('\n')}\x1B[0m'
-        : '';
-
-    final errorMessage = failures.isNotEmpty
-        ? '\n\x1B[31m✖ Failed to update:'
-            '\n${failures.map((n) => '  • $n').join('\n')}\x1B[0m'
-        : '';
-
-    print([successMessage, errorMessage].join());
-
-    if (successes.isNotEmpty) {
-      print('\nUpdated in: \x1B[36m$widgetsPath/\x1B[0m');
-    }
   }
 }

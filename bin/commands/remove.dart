@@ -3,6 +3,7 @@ import 'package:args/command_runner.dart';
 import 'package:flutcn_ui/src/core/errors/exceptions.dart';
 import 'package:flutcn_ui/src/core/utils/checkbox_chooser.dart';
 import 'package:flutcn_ui/src/core/utils/config_reader.dart';
+import 'package:flutcn_ui/src/core/utils/lockfile_manager.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/remove_usecase.dart';
@@ -95,6 +96,7 @@ class RemoveCommand extends Command {
       onSuccess: 'Removed $widgetName widget',
     );
 
+    LockfileManager.removeWidget(widgetName);
     print('\n\x1B[32m✔ Successfully removed: $widgetName.dart\x1B[0m');
     print('Removed from: \x1B[36m$widgetsPath/\x1B[0m');
   }
@@ -157,7 +159,10 @@ class RemoveCommand extends Command {
             );
             result.fold(
               (failure) => throw Exception(failure.message),
-              (_) => successes.add(widgetName),
+              (_) {
+                LockfileManager.removeWidget(widgetName);
+                successes.add(widgetName);
+              },
             );
           } catch (e) {
             failures.add(widgetName);

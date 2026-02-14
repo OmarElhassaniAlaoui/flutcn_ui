@@ -1,6 +1,6 @@
 # Flutcn UI Project Analysis
 
-> **Version analyzed:** 1.2.0 | **Dart files:** 46 | **LOC (lib/src/):** ~1,200 | **Branch:** dev
+> **Version analyzed:** 1.2.0+ | **Dart files:** 47 | **LOC (lib/src/):** ~1,300 | **Branch:** dev
 
 ## 1. Project Overview
 
@@ -71,6 +71,7 @@ No circular dependencies detected.
 |---------|---------|---------|
 | `args` | `^2.6.0` | CLI argument parsing |
 | `cli_spin` | `^1.0.1` | Spinner animations for async operations |
+| `crypto` | `^3.0.3` | SHA-256 hashing for widget content tracking |
 | `dartz` | `^0.10.1` | `Either<L, R>` functional error handling |
 | `equatable` | `^2.0.7` | Value equality for entities |
 | `get_it` | `^9.0.0` | Service locator / DI container |
@@ -85,7 +86,7 @@ No circular dependencies detected.
 |---------|---------|---------|
 | `build_runner` | `^2.4.6` | Code generation (prepared, not actively used) |
 | `lints` | `^5.0.0` | `package:lints/recommended.yaml` lint rules |
-| `test` | `^1.24.0` | Test framework — 47 unit tests for entities, repository, and use cases |
+| `test` | `^1.24.0` | Test framework — 64 unit tests for entities, repository, use cases, and lockfile manager |
 
 ## 4. CLI Commands
 
@@ -115,8 +116,13 @@ No circular dependencies detected.
 
 ### `list`
 - Fetches all available widgets from registry
+- Shows install status markers per widget using lockfile + local file detection:
+  - `[installed]` (green) — local file matches lockfile hash
+  - `[modified locally]` (yellow) — local file differs from lockfile hash
+  - `[installed - untracked]` (dim) — local file exists but not in lockfile
 - Shows interactive multi-select interface
 - Checks for existing files before writing (overwrite/skip/cancel)
+- Records installed widgets in lockfile after download
 - Prints color-coded summary: green (success), yellow (skipped), red (failed)
 
 ### `remove` (added in v1.2.0)
@@ -131,8 +137,12 @@ No circular dependencies detected.
 - **Interactive mode:** `flutcn_ui update` — shows multi-select of installed widgets
 - `--all` / `-a` flag to update all installed widgets without selection
 - Checks widget exists locally before fetching from registry
-- Re-downloads and overwrites local `.dart` file with latest registry version
-- No versioning — simple "re-fetch and overwrite" (designed to accommodate versioning later)
+- Compares fetched content hash against lockfile to detect changes
+- Color-coded per-widget status output:
+  - Green `✔ up-to-date` — content hash unchanged
+  - Cyan `↑ updated` — content hash changed, file overwritten
+  - Yellow `⚡ newly tracked` — widget wasn't in lockfile, now tracked
+- Records updated hash in lockfile after each widget
 
 ## 5. API Integration
 
@@ -169,21 +179,50 @@ No circular dependencies detected.
 - **Schema validation** — `fromJson()` validates all required fields with type checks and clear error messages
 - **Centralized reading** — `ConfigReader` utility handles file existence, JSON parsing, and validation errors
 
-## 7. Code Quality — Strengths
+## 7. Widget Versioning (Lockfile)
+
+**File:** `flutcn.lock.json` (project root, alongside `flutcn.config.json`)
+
+```json
+{
+  "lockfileVersion": 1,
+  "widgets": {
+    "button": {
+      "style": "new-york",
+      "contentHash": "sha256:a3f5e8c9...",
+      "installedAt": "2026-02-14T10:30:00.000Z"
+    }
+  }
+}
+```
+
+**How it works:**
+- `init` creates an empty lockfile
+- `add` / `list` record each widget's SHA-256 content hash after download
+- `remove` deletes the widget entry from the lockfile
+- `update` compares fetched content hash against lockfile to show up-to-date vs updated status
+- `list` reads lockfile + local files to show `[installed]`, `[modified locally]`, or `[installed - untracked]` markers
+
+**Implementation:** `LockfileManager` static utility class (`lib/src/core/utils/lockfile_manager.dart`) — mirrors the `ConfigReader` pattern. Methods: `readLockfile()`, `writeLockfile()`, `computeHash()`, `recordWidget()`, `removeWidget()`, `getWidget()`, `isUpToDate()`, `lockfileExists()`.
+
+**Design decision:** Lockfile is a CLI utility concern (presentation layer), not a domain concept. No new entities, models, or repository changes needed.
+
+## 8. Code Quality — Strengths
 
 - **Clean Architecture** — proper layer separation, no layer violations
 - **Functional error handling** — `Either<Failure, T>` consistently used across all use cases
 - **Comprehensive failure types** — 10 specific failure classes for different error scenarios
 - **Granular exception mapping** — repository catches `OfflineException`, `ThemeNotFoundException`, `ServerException`, `ComponentNotFoundException`, `InvalidConfigFileException` and maps each to typed `Failure`
 - **Config validation** — `fromJson()` validates required fields with type checks and clear error messages
+- **Widget versioning** — SHA-256 content hashing tracks installed widget state in lockfile, enabling change detection across `update` and `list` commands
 - **Network resilience** — 30s timeouts, offline detection (catches `SocketException` + `http.ClientException`), friendly error messages in spinners
 - **Cross-platform CLI UX** — platform-aware keyboard handling (Windows vs. Mac/Linux key codes)
 - **Visual feedback** — spinners with friendly error messages, color-coded output, interactive selection
 - **Singleton DI** — lazy registration prevents unnecessary initialization
 - **CI/CD pipeline** — automated analysis, release tagging, and pub.dev publishing
-- **Unit tests** — 47 tests covering entities, repository exception mapping, and use case passthrough
+- **Unit tests** — 64 tests covering entities, repository exception mapping, use case passthrough, and lockfile manager
 
-## 8. Bugs & Issues (Fixed)
+## 9. Bugs & Issues (Fixed)
 
 All bugs identified have been resolved in v1.1.3, v1.1.4, and v1.1.5:
 
@@ -230,7 +269,7 @@ Two root causes: (1) blanket `catch(e) { throw InitializationException(); }` con
 
 `Directory('flutcn.config.json').existsSync()` always returned false because it checked for a directory, not a file. Replaced with `ConfigReader.configExists()`.
 
-## 9. Unused & Commented-Out Code
+## 10. Unused & Commented-Out Code
 
 ### Empty use case files (placeholders)
 - `lib/src/domain/usecases/add_theme_usecase.dart` — empty
@@ -245,9 +284,9 @@ State management selection is prepared across multiple files but fully commented
 - `CommandInterfaceImpl` — switch statement for bloc/provider/riverpod commented
 - `InitCommand` — state management prompt commented
 
-## 10. Test Coverage
+## 11. Test Coverage
 
-**Current state: 47 unit tests (40 in v1.1.5, 7 added in v1.2.0)**
+**Current state: 64 unit tests (40 in v1.1.5, 7 added in v1.2.0, 17 for lockfile manager)**
 
 | Test file | Tests | Coverage |
 |-----------|-------|----------|
@@ -258,6 +297,7 @@ State management selection is prepared across multiple files but fully commented
 | `test/domain/usecases/list_usecase_test.dart` | 4 | Success + empty list + failure propagation |
 | `test/domain/usecases/remove_usecase_test.dart` | 3 | Success + ComponentNotFoundFailure + GenericFailure |
 | `test/domain/usecases/update_usecase_test.dart` | 4 | Success + OfflineFailure + ComponentNotFoundFailure + ServerFailure |
+| `test/core/utils/lockfile_manager_test.dart` | 17 | computeHash, readLockfile, writeLockfile, recordWidget, removeWidget, getWidget, isUpToDate, lockfileExists |
 | **Mock classes** | — | `test/mocks/mock_command_interface.dart`, `test/mocks/mock_command_repository.dart` |
 
 **Not yet tested:**
@@ -266,7 +306,7 @@ State management selection is prepared across multiple files but fully commented
 - `ConfigReader` (file I/O, JSON parsing errors)
 - `CommandInterfaceImpl` (file creation, theme fetching)
 
-## 11. CI/CD Pipeline
+## 12. CI/CD Pipeline
 
 ### Workflows (`.github/workflows/`)
 
@@ -285,7 +325,7 @@ State management selection is prepared across multiple files but fully commented
 ### Version Bump Script
 `scripts/bump_version.sh` — updates version in `pubspec.yaml` and creates a CHANGELOG entry.
 
-## 12. Improvement Recommendations
+## 13. Improvement Recommendations
 
 ### ~~Priority 1 — Fix Bugs~~ — All Done (v1.1.3, v1.1.4, v1.1.5)
 - [x] Fix `get()` method in `HttpServiceImpl` to prepend `baseUrl`
@@ -317,11 +357,11 @@ State management selection is prepared across multiple files but fully commented
 ### Priority 5 — Features
 - [x] `remove` command — uninstall widgets (v1.2.0)
 - [x] `update` command — update installed widgets (v1.2.0)
-- [ ] Widget versioning — track installed versions
+- [x] Widget versioning — track installed versions via `flutcn.lock.json` with SHA-256 content hashes
 - [ ] `--path` option on `add` command — override default widget directory
 - [ ] Dependency resolution for widget inter-dependencies
 
-## 13. File Structure
+## 14. File Structure
 
 ```
 flutcn_ui/
@@ -358,6 +398,7 @@ flutcn_ui/
 │   │       ├── checkbox_chooser.dart  # Interactive multi-select UI
 │   │       ├── config_reader.dart     # Centralized config file reading/validation
 │   │       ├── highlighter.dart       # ANSI color extension
+│   │       ├── lockfile_manager.dart  # Lock file utility (read/write/hash/track)
 │   │       └── spinners.dart          # Async spinner wrapper with friendly errors
 │   ├── data/
 │   │   ├── interfaces/
@@ -401,6 +442,8 @@ flutcn_ui/
 │   ├── mocks/
 │   │   ├── mock_command_interface.dart    # Manual mock for CommandInterface
 │   │   └── mock_command_repository.dart   # Manual mock for CommandRepository
+│   ├── core/utils/
+│   │   └── lockfile_manager_test.dart         # 17 lockfile manager tests
 │   ├── data/repository/
 │   │   └── command_repository_impl_test.dart  # 15 exception mapping tests
 │   └── domain/

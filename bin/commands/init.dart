@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:flutcn_ui/src/core/constants/questions.dart';
 import 'package:flutcn_ui/src/core/utils/config_reader.dart';
+import 'package:flutcn_ui/src/core/utils/lockfile_manager.dart';
 import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 import 'package:flutcn_ui/src/domain/usecases/init_usecase.dart';
 import 'package:prompts/prompts.dart' as prompts;
@@ -46,8 +47,12 @@ class InitCommand extends Command {
         );
         result.fold(
           (failure) => print('Error: ${failure.message}'),
-          (_) => print(
-              '\x1B[32m\u{2714} Flutcn UI initialized successfully!\x1B[0m'),
+          (_) {
+            LockfileManager.writeLockfile(
+                {'lockfileVersion': 1, 'widgets': <String, dynamic>{}});
+            print(
+                '\x1B[32m\u{2714} Flutcn UI initialized successfully!\x1B[0m');
+          },
         );
       } catch (e) {
         print('Error: $e');
@@ -100,8 +105,11 @@ class InitCommand extends Command {
 
     result.fold(
       (failure) => print('Error: ${failure.message}'),
-      (_) =>
-          print('\x1B[32m\u{2714} Flutcn UI initialized successfully!\x1B[0m'),
+      (_) {
+        LockfileManager.writeLockfile(
+            {'lockfileVersion': 1, 'widgets': <String, dynamic>{}});
+        print('\x1B[32m\u{2714} Flutcn UI initialized successfully!\x1B[0m');
+      },
     );
   }
 }
