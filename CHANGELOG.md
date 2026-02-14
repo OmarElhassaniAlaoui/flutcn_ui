@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-02-14
+
+### Added
+
+- `remove` command — uninstall widgets by deleting local `.dart` files
+  - Direct mode: `flutcn_ui remove button`
+  - Interactive mode: `flutcn_ui remove` (multi-select from installed widgets)
+  - `--force` / `-f` flag to skip confirmation prompt
+- `update` command — refresh installed widgets from the registry
+  - Direct mode: `flutcn_ui update button`
+  - Interactive mode: `flutcn_ui update` (multi-select from installed widgets)
+  - `--all` / `-a` flag to update all installed widgets
+- Unit tests for `remove` and `update` use cases (47 total tests)
+
 ## [1.1.5] - 2026-02-12
 
 ### Fixed
