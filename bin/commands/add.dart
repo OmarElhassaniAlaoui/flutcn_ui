@@ -21,7 +21,12 @@ class AddCommand extends Command {
   final SpinnerHelper _spinnerHelper = SpinnerHelper();
 
   AddCommand() {
-    argParser;
+    argParser.addOption(
+      'path',
+      abbr: 'p',
+      help: 'Custom directory path for widget files (overrides config)',
+      valueHelp: 'directory',
+    );
   }
 
   @override
@@ -34,7 +39,8 @@ class AddCommand extends Command {
       }
 
       final config = await ConfigReader.readConfig();
-      final widgetsPath = config.widgetsPath;
+      final pathOverride = argResults?['path'] as String?;
+      final widgetsPath = pathOverride ?? config.widgetsPath;
       final widgetName = argResults?.rest.firstOrNull;
 
       if (widgetName != null) {
