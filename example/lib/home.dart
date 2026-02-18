@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 import 'widgets/button.dart';
 import 'widgets/avatar.dart';
+import 'widgets/badge.dart';
 import 'widgets/theme_toggle_button.dart';
 
 /// Component Showcase Page
@@ -30,6 +31,10 @@ class HomePage extends StatelessWidget {
 
               // Avatar Section
               _AvatarSection(),
+              const SizedBox(height: 40),
+
+              // Badge Section
+              _BadgeSection(),
               const SizedBox(height: 40),
             ],
           ),
@@ -360,6 +365,134 @@ class _AvatarSection extends StatelessWidget {
                     fallbackText: 'U',
                     borderWidth: 3,
                     borderColor: Colors.red,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Badge showcase section
+class _BadgeSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionTitle(title: 'Badge', subtitle: 'badge'),
+        const SizedBox(height: 16),
+        _ShowcaseCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Variants
+              _SubsectionTitle(title: 'Variants'),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  FlutBadge(
+                    text: 'Primary',
+                    variant: BadgeVariant.primary,
+                  ),
+                  FlutBadge(
+                    text: 'Secondary',
+                    variant: BadgeVariant.secondary,
+                  ),
+                  FlutBadge(
+                    text: 'Destructive',
+                    variant: BadgeVariant.destructive,
+                  ),
+                  FlutBadge(
+                    text: 'Outline',
+                    variant: BadgeVariant.outline,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
+              // With Icons
+              _SubsectionTitle(title: 'With Icons'),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  FlutBadge(
+                    text: 'New',
+                    icon: Icons.star,
+                    variant: BadgeVariant.primary,
+                  ),
+                  FlutBadge(
+                    text: 'Info',
+                    icon: Icons.info_outline,
+                    variant: BadgeVariant.secondary,
+                  ),
+                  FlutBadge(
+                    text: 'Error',
+                    icon: Icons.error_outline,
+                    variant: BadgeVariant.destructive,
+                  ),
+                  FlutBadge(
+                    text: 'Tag',
+                    icon: Icons.label_outline,
+                    variant: BadgeVariant.outline,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
+              // Helper Class
+              _SubsectionTitle(title: 'Helper Class'),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  Badge.primary(text: 'Badge'),
+                  Badge.secondary(text: 'Badge'),
+                  Badge.destructive(text: 'Badge'),
+                  Badge.outline(text: 'Badge'),
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
+              // Custom
+              _SubsectionTitle(title: 'Custom'),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  Badge.custom(
+                    text: 'Success',
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                  Badge.custom(
+                    text: 'Warning',
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                  ),
+                  Badge.custom(
+                    text: 'Info',
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                  Badge.custom(
+                    text: 'Bordered',
+                    borderColor: Colors.purple,
+                    foregroundColor: Colors.purple,
+                    borderWidth: 1.5,
+                    borderRadius: 6,
                   ),
                 ],
               ),

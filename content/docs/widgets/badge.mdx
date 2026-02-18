@@ -1,0 +1,148 @@
+---
+title: Badge
+description: Displays a small label or tag for status indicators, counts, or categorization.
+---
+
+# Installation
+
+```bash
+flutcn_ui add badge
+```
+
+# Usage
+
+```dart title="main.dart"
+import '../widgets/badge.dart';
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Badge'),
+        ),
+        body: Center(
+          child: FlutBadge(
+            text: 'Badge',
+            variant: BadgeVariant.primary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| text | String | The text to display in the badge. |
+| variant | BadgeVariant | The variant of the badge (primary, secondary, destructive, outline, custom). |
+| icon | IconData | An optional leading icon for the badge. |
+| child | Widget | A custom child widget to replace the default content. |
+| backgroundColor | Color | The background color of the badge. |
+| foregroundColor | Color | The text and icon color of the badge. |
+| borderColor | Color | The border color (used with outline and custom variants). |
+| borderWidth | double | The border width (used with outline and custom variants). |
+| borderRadius | double | The border radius of the badge. Defaults to pill shape. |
+| padding | EdgeInsetsGeometry | The padding inside the badge. |
+| fontSize | double | The font size of the badge text. |
+| fontWeight | FontWeight | The font weight of the badge text. |
+| iconSize | double | The size of the leading icon. |
+| gap | double | The gap between the icon and text. |
+
+## Variants
+
+FlutBadge provides several variants, each with its own appearance. You can choose the variant that best suits your needs.
+
+### Primary
+
+The primary variant is the default. It uses the primary color scheme for background and text.
+
+```dart title="badge.dart"
+FlutBadge(
+  text: 'Primary',
+  variant: BadgeVariant.primary,
+)
+```
+
+### Secondary
+
+The secondary variant uses the secondary color scheme. Ideal for less prominent labels.
+
+```dart title="badge.dart"
+FlutBadge(
+  text: 'Secondary',
+  variant: BadgeVariant.secondary,
+)
+```
+
+### Destructive
+
+The destructive variant uses the error color scheme. Use for warnings or error states.
+
+```dart title="badge.dart"
+FlutBadge(
+  text: 'Destructive',
+  variant: BadgeVariant.destructive,
+)
+```
+
+### Outline
+
+The outline variant has a transparent background with a border. Useful for subtle labeling.
+
+```dart title="badge.dart"
+FlutBadge(
+  text: 'Outline',
+  variant: BadgeVariant.outline,
+)
+```
+
+### Custom
+
+The custom variant lets you fully control the badge appearance with custom colors, borders, and border radius.
+
+```dart title="badge.dart"
+FlutBadge(
+  text: 'Custom',
+  variant: BadgeVariant.custom,
+  backgroundColor: Colors.green,
+  foregroundColor: Colors.white,
+  borderRadius: 6,
+)
+```
+
+## With Icons
+
+You can add a leading icon to any badge variant.
+
+```dart title="badge.dart"
+FlutBadge(
+  text: 'New',
+  icon: Icons.star,
+  variant: BadgeVariant.primary,
+)
+```
+
+## Helper Class
+
+Use the `Badge` helper class for quick access to common variants.
+
+```dart title="badge.dart"
+Badge.primary(text: 'Primary')
+Badge.secondary(text: 'Secondary')
+Badge.destructive(text: 'Destructive')
+Badge.outline(text: 'Outline')
+Badge.custom(
+  text: 'Success',
+  backgroundColor: Colors.green,
+  foregroundColor: Colors.white,
+)
+```
