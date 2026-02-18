@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-02-18
+
+### Added
+
+- `--path` / `-p` option on `add` command — override default widget directory per invocation
+  - Works with both single widget (`flutcn_ui add button --path lib/components`) and interactive multi-select mode
+  - Does not modify `flutcn.config.json`
+- 7 new unit tests for `AddCommand` argParser (71 total)
+
 ## [1.3.0] - 2026-02-14
 
 ### Added
