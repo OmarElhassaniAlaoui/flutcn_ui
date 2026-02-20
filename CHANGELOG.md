@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.3] - 2026-02-20
+
+### Added
+
+- Flutter web preview system in example app for live widget previews in documentation site
+  - Isolated preview pages for each widget (button, avatar, badge) with theme support
+  - Web interop for real-time theme syncing via `postMessage` between doc site and Flutter iframe
+  - Query parameter-based routing (`?widget=button&theme=dark`) for reliable static file serving
+- `go_router` and `web` dependencies in example app
+- `ComponentPreview` React component for the doc site (iframe-based widget previews with Preview/Code tabs)
+
+## [1.3.2] - 2026-02-19
+
+### Added
+
+- Badge widget component with example app showcase and documentation
+
 ## [1.3.1] - 2026-02-18
 
 ### Added
