@@ -1,5 +1,5 @@
-import 'package:example/themes/app_palette.dart';
 import 'package:flutter/material.dart';
+
 // Helper class for button colors
 class ButtonColors {
   final Color background;
@@ -209,57 +209,58 @@ class FlutButton extends StatelessWidget {
       shape: WidgetStateProperty.all(
         variant == ButtonVariant.custom && shape != null
             ? (shape == BoxShape.circle
-                ? CircleBorder(
-                    side: borderWidth != null && borderColor != null
-                        ? BorderSide(
-                            color: isEnabled
-                                ? borderColor!
-                                : borderColor!.withOpacity(0.5),
-                            width: borderWidth!,
-                          )
-                        : BorderSide.none,
-                  )
-                : RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                        borderRadius ?? _getBorderRadiusValue(theme)),
-                    side: borderWidth != null && borderColor != null
-                        ? BorderSide(
-                            color: isEnabled
-                                ? borderColor!
-                                : borderColor!.withOpacity(0.5),
-                            width: borderWidth!,
-                          )
-                        : BorderSide.none,
-                  ))
+                  ? CircleBorder(
+                      side: borderWidth != null && borderColor != null
+                          ? BorderSide(
+                              color: isEnabled
+                                  ? borderColor!
+                                  : borderColor!.withOpacity(0.5),
+                              width: borderWidth!,
+                            )
+                          : BorderSide.none,
+                    )
+                  : RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        borderRadius ?? _getBorderRadiusValue(theme),
+                      ),
+                      side: borderWidth != null && borderColor != null
+                          ? BorderSide(
+                              color: isEnabled
+                                  ? borderColor!
+                                  : borderColor!.withOpacity(0.5),
+                              width: borderWidth!,
+                            )
+                          : BorderSide.none,
+                    ))
             : (variant == ButtonVariant.outline
-                ? RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(_getBorderRadiusValue(theme)),
-                    side: BorderSide(
-                      color: isEnabled
-                          ? colors.foreground
-                          : colors.foreground.withOpacity(0.5),
-                      width: 1.0,
-                    ),
-                  )
-                : RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(_getBorderRadiusValue(theme)),
-                    side: BorderSide
-                        .none, // No border for ghost and other variants
-                  )),
+                  ? RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        _getBorderRadiusValue(theme),
+                      ),
+                      side: BorderSide(
+                        color: isEnabled
+                            ? colors.foreground
+                            : colors.foreground.withOpacity(0.5),
+                        width: 1.0,
+                      ),
+                    )
+                  : RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        _getBorderRadiusValue(theme),
+                      ),
+                      side: BorderSide
+                          .none, // No border for ghost and other variants
+                    )),
       ),
       // Size-related properties (applied to all variants)
       padding: WidgetStateProperty.all(buttonPadding),
       textStyle: WidgetStateProperty.all(
         textStyle ??
-            TextStyle(
-              fontSize: buttonFontSize,
-              fontWeight: buttonFontWeight,
-            ),
+            TextStyle(fontSize: buttonFontSize, fontWeight: buttonFontWeight),
       ),
-      minimumSize:
-          WidgetStateProperty.all(Size(buttonMinWidth, buttonMinHeight)),
+      minimumSize: WidgetStateProperty.all(
+        Size(buttonMinWidth, buttonMinHeight),
+      ),
       maximumSize: buttonWidth != null
           ? WidgetStateProperty.all(Size(buttonWidth, double.infinity))
           : null,
@@ -291,10 +292,12 @@ class FlutButton extends StatelessWidget {
           gradient: gradient,
           borderRadius: shape != BoxShape.circle
               ? BorderRadius.circular(
-                  borderRadius ?? _getBorderRadiusValue(theme))
+                  borderRadius ?? _getBorderRadiusValue(theme),
+                )
               : null,
-          shape:
-              shape == BoxShape.circle ? BoxShape.circle : BoxShape.rectangle,
+          shape: shape == BoxShape.circle
+              ? BoxShape.circle
+              : BoxShape.rectangle,
           boxShadow: boxShadow,
         ),
         child: buttonContent,
@@ -306,9 +309,9 @@ class FlutButton extends StatelessWidget {
       return TextButton(
         onPressed: isEnabled ? onPressed : null,
         style: buttonStyle.copyWith(
-          textStyle: WidgetStateProperty.all(TextStyle(
-            decoration: TextDecoration.underline,
-          )),
+          textStyle: WidgetStateProperty.all(
+            TextStyle(decoration: TextDecoration.underline),
+          ),
         ),
         child: buttonContent,
       );
@@ -379,11 +382,9 @@ class FlutButton extends StatelessWidget {
       rowChildren.add(
         Text(
           text!,
-          style: textStyle ??
-              TextStyle(
-                fontSize: fontSize,
-                fontWeight: fontWeight,
-              ),
+          style:
+              textStyle ??
+              TextStyle(fontSize: fontSize, fontWeight: fontWeight),
         ),
       );
     }
@@ -395,52 +396,31 @@ class FlutButton extends StatelessWidget {
     );
   }
 
-  // Get colors based on button variant
+  // Get colors based on button variant — reads from ColorScheme (theme-driven)
   ButtonColors _getColorsForVariant(ThemeData theme) {
-    final isDark = theme.brightness == Brightness.dark;
-    final colors = AppPalette.colors;
+    final cs = theme.colorScheme;
 
     switch (variant) {
       case ButtonVariant.primary:
-        return ButtonColors(
-          background:
-              isDark ? colors['primaryForeground']! : colors['primary']!,
-          foreground:
-              isDark ? colors['primary']! : colors['primaryForeground']!,
-        );
+        return ButtonColors(background: cs.primary, foreground: cs.onPrimary);
       case ButtonVariant.secondary:
         return ButtonColors(
-          background: isDark ? colors['darkMuted']! : colors['secondary']!,
-          foreground: isDark
-              ? colors['darkForeground']!
-              : colors['secondaryForeground']!,
-        );
+            background: cs.secondary, foreground: cs.onSecondary);
       case ButtonVariant.outline:
         return ButtonColors(
-          background: Colors.transparent,
-          foreground: isDark ? colors['darkForeground']! : colors['primary']!,
-        );
+            background: Colors.transparent, foreground: cs.onSurface);
       case ButtonVariant.ghost:
         return ButtonColors(
-          background: Colors.transparent, // Transparent background
-          foreground: isDark ? colors['darkForeground']! : colors['primary']!,
-        );
+            background: Colors.transparent, foreground: cs.onSurface);
       case ButtonVariant.link:
         return ButtonColors(
-          background: Colors.transparent,
-          foreground: isDark ? colors['darkForeground']! : colors['primary']!,
-        );
+            background: Colors.transparent, foreground: cs.primary);
       case ButtonVariant.destructive:
-        return ButtonColors(
-          background: colors['destructive']!,
-          foreground: colors['destructiveForeground']!,
-        );
+        return ButtonColors(background: cs.error, foreground: cs.onError);
       case ButtonVariant.custom:
         return ButtonColors(
-          background: backgroundColor ??
-              (isDark ? colors['primaryForeground']! : colors['primary']!),
-          foreground: foregroundColor ??
-              (isDark ? colors['primary']! : colors['primaryForeground']!),
+          background: backgroundColor ?? cs.primary,
+          foreground: foregroundColor ?? cs.onPrimary,
         );
     }
   }

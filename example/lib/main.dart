@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'themes/app_theme.dart';
+import 'themes/app_palette.dart';
 import 'home.dart';
 import 'theme_notifier.dart';
 import 'preview/preview_page.dart';
@@ -45,6 +46,17 @@ class MyApp extends StatelessWidget {
           theme: FlutcnTheme.lightTheme(),
           darkTheme: FlutcnTheme.darkTheme(),
           themeMode: themeMode,
+          // Inject FlutcnTokensTheme based on the resolved brightness.
+          // Widgets can then call FlutcnTokensTheme.of(context) to read
+          // muted, ring, accent, radius, and other extra tokens.
+          builder: (context, child) {
+            final isDark =
+                Theme.of(context).brightness == Brightness.dark;
+            return FlutcnTokensTheme(
+              tokens: isDark ? FlutcnColorTokens.dark : FlutcnColorTokens.light,
+              child: child!,
+            );
+          },
           home: home,
         );
       },
