@@ -50,7 +50,8 @@ void main() {
       );
     });
 
-    test('returns Left(ThemeNotFoundFailure) on ThemeNotFoundException', () async {
+    test('returns Left(ThemeNotFoundFailure) on ThemeNotFoundException',
+        () async {
       mockInterface.initException = ThemeNotFoundException(
         message: 'Theme not found for style "foo"',
       );
@@ -80,7 +81,8 @@ void main() {
       );
     });
 
-    test('returns Left(InvalidConfigFileFailure) on InvalidConfigFileException', () async {
+    test('returns Left(InvalidConfigFileFailure) on InvalidConfigFileException',
+        () async {
       mockInterface.initException = InvalidConfigFileException(
         message: 'Missing "themePath"',
       );
@@ -138,7 +140,8 @@ void main() {
       );
     });
 
-    test('returns Left(ComponentNotFoundFailure) on ComponentNotFoundException', () async {
+    test('returns Left(ComponentNotFoundFailure) on ComponentNotFoundException',
+        () async {
       mockInterface.addException = ComponentNotFoundException(
         message: 'Widget "foo" not found',
       );

@@ -3,6 +3,7 @@ import 'package:args/command_runner.dart';
 import 'package:flutcn_ui/src/core/errors/exceptions.dart';
 import 'package:flutcn_ui/src/core/utils/checkbox_chooser.dart';
 import 'package:flutcn_ui/src/core/utils/config_reader.dart';
+import 'package:flutcn_ui/src/core/utils/lockfile_manager.dart';
 import 'package:flutcn_ui/src/core/utils/spinners.dart';
 import 'package:flutcn_ui/src/domain/entities/init_config_entity.dart';
 import 'package:flutcn_ui/src/domain/entities/widget_entity.dart';
@@ -20,7 +21,12 @@ class AddCommand extends Command {
   final SpinnerHelper _spinnerHelper = SpinnerHelper();
 
   AddCommand() {
-    argParser;
+    argParser.addOption(
+      'path',
+      abbr: 'p',
+      help: 'Custom directory path for widget files (overrides config)',
+      valueHelp: 'directory',
+    );
   }
 
   @override
@@ -33,7 +39,8 @@ class AddCommand extends Command {
       }
 
       final config = await ConfigReader.readConfig();
-      final widgetsPath = config.widgetsPath;
+      final pathOverride = argResults?['path'] as String?;
+      final widgetsPath = pathOverride ?? config.widgetsPath;
       final widgetName = argResults?.rest.firstOrNull;
 
       if (widgetName != null) {
@@ -78,6 +85,8 @@ class AddCommand extends Command {
     );
 
     await _createWidgetFile(widgetsPath, widgetName, resultWidget.content!);
+    LockfileManager.recordWidget(
+        widgetName, config.style, resultWidget.content!);
     print('\n\x1B[32m✔ Successfully created: $widgetName.dart\x1B[0m');
     print('File created in: \x1B[36m$widgetsPath/\x1B[0m');
   }
@@ -131,6 +140,8 @@ class AddCommand extends Command {
               (failure) => throw Exception(failure.message),
               (widget) async {
                 await _writeFile(widgetsPath, widgetName, widget.content!);
+                LockfileManager.recordWidget(
+                    widgetName, config.style, widget.content!);
                 successes.add(widgetName);
               },
             );

@@ -7,6 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-03-19
+
+### Added
+
+- `FlutInput` widget — shadcn/ui-aligned text input with label, hint, error, and disabled states
+- `FlutCard` widget — composable card with header, content, and footer slots
+- `FlutInput` and `FlutCard` showcase sections in the example app home page
+- Flutter web preview support for `input` and `card` widgets (live previews in the doc site)
+- `FlutcnColorTokens` typed token class replacing the flat `AppPalette` map — one field per shadcn/ui CSS variable (`background`, `foreground`, `card`, `primary`, `muted`, `accent`, `border`, `input`, `ring`, `radius`, etc.)
+- `FlutcnTokensTheme` `InheritedWidget` for accessing extra tokens (`muted`, `ring`, `accent`, `radius`) not covered by M3 `ColorScheme`
+- Full shadcn-aligned `TextTheme` (12px–57px scale with correct weights and letter-spacing)
+
+### Fixed
+
+- Input `fillColor` was incorrectly set to the border color (`--input`); now correctly uses `background`
+- `FlutButton` was reading colors from the static `AppPalette` map, bypassing the active theme; dark mode button colors now work correctly
+- Focus ring now uses the `ring` token (zinc-900 light / zinc-300 dark) instead of the default Material blue
+- `outline` and `outlineVariant` in `ColorScheme` now explicitly map to `--input` and `--border` shadcn tokens respectively
+
+## [1.3.3] - 2026-02-20
+
+### Added
+
+- Flutter web preview system in example app for live widget previews in documentation site
+  - Isolated preview pages for each widget (button, avatar, badge) with theme support
+  - Web interop for real-time theme syncing via `postMessage` between doc site and Flutter iframe
+  - Query parameter-based routing (`?widget=button&theme=dark`) for reliable static file serving
+- `go_router` and `web` dependencies in example app
+- `ComponentPreview` React component for the doc site (iframe-based widget previews with Preview/Code tabs)
+
+## [1.3.2] - 2026-02-19
+
+### Added
+
+- Badge widget component with example app showcase and documentation
+
+## [1.3.1] - 2026-02-18
+
+### Added
+
+- `--path` / `-p` option on `add` command — override default widget directory per invocation
+  - Works with both single widget (`flutcn_ui add button --path lib/components`) and interactive multi-select mode
+  - Does not modify `flutcn.config.json`
+- 7 new unit tests for `AddCommand` argParser (71 total)
+
+## [1.3.0] - 2026-02-14
+
+### Added
+
+- Widget versioning via `flutcn.lock.json` — tracks installed widgets with SHA-256 content hashes
+  - `init` creates empty lockfile alongside config
+  - `add` / `list` record widget hashes after download
+  - `remove` deletes widget entry from lockfile
+  - `update` compares hashes: shows up-to-date, updated, or newly tracked per widget
+  - `list` shows install status: [installed], [modified locally], [installed - untracked]
+- `crypto` dependency for SHA-256 hashing
+- `LockfileManager` utility class (`lib/src/core/utils/lockfile_manager.dart`)
+- 17 new unit tests for lockfile manager (64 total)
+- Updated README with remove, update, and widget versioning documentation
+
 ## [1.2.0] - 2026-02-14
 
 ### Added

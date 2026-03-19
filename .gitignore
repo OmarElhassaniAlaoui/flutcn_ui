@@ -6,3 +6,12 @@
 .agents/
 .kilocode/
 .agent/ 
+
+.skills-lock.json.worktrees/
+docs/flutcn-ui-doc-website.md
+docs/forui.md
+docs/plans/*
+skills-lock.json
+content/docs
+content/docs/widgets
+reports/

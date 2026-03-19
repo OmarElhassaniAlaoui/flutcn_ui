@@ -9,10 +9,13 @@
 - **Project Initialization**: Set up your Flutter project with a theme directory, widget directory, and configuration file.
 - **Smart Widget Management**:
   - Add individual widgets or select multiple from an interactive list
+  - Remove installed widgets (single or batch, with `--force` flag)
+  - Update widgets to latest registry version (single, batch, or `--all`)
   - Overwrite confirmation for existing files
   - Batch operations for multiple components
+- **Widget Versioning**: Tracks installed widgets in `flutcn.lock.json` with SHA-256 content hashes — detects changes on update, shows install status on list.
 - **Customizable Themes**: Choose from base color palettes (e.g., Zinc, Slate, Gray) and styles (e.g., New York).
-- **Interactive Experience**: 
+- **Interactive Experience**:
   - Visual spinners for long operations
   - Conflict resolution prompts
   - Color-coded output messages
@@ -113,15 +116,71 @@ flutcn_ui add
   [•] avatar
 ```
 
+### Remove Widgets
+
+Remove installed widgets:
+
+**Single Widget**:
+```bash
+flutcn_ui remove <widget-name>
+```
+
+**Multiple Widgets (Interactive)**:
+```bash
+flutcn_ui remove
+# Then select from installed widgets using spacebar
+```
+
+**Options**:
+- `--force` / `-f`: Skip confirmation prompt
+
+**Examples**:
+```bash
+# Remove with confirmation
+flutcn_ui remove button
+
+# Remove without confirmation
+flutcn_ui remove button --force
+
+# Interactive multi-select
+flutcn_ui remove
+```
+
+### Update Widgets
+
+Re-download widgets from the registry to get the latest version:
+
+**Single Widget**:
+```bash
+flutcn_ui update <widget-name>
+```
+
+**All Widgets**:
+```bash
+flutcn_ui update --all
+```
+
+**Interactive**:
+```bash
+flutcn_ui update
+# Then select from installed widgets using spacebar
+```
+
+**Output** (color-coded per widget):
+- `✔ up-to-date` — no changes in registry
+- `↑ updated` — new content downloaded
+- `⚡ newly tracked` — widget now tracked in lockfile
+
 ### List Available Widgets
 
-Discover components in the registry:
+Browse the registry and install widgets:
 
 ```bash
 flutcn_ui list
 ```
 
 **Output**:
+- Shows install status per widget: `[installed]`, `[modified locally]`, or `[installed - untracked]`
 - Interactive multi-select interface
 - Batch download capability
 - Shows download progress and results
@@ -140,6 +199,25 @@ The `flutcn.config.json` file controls project settings:
 ```
 
 **Note**: Manual edits are possible, but re-running `init` is recommended for major changes.
+
+### Lock File
+
+The `flutcn.lock.json` file tracks installed widgets with content hashes:
+
+```json
+{
+  "lockfileVersion": 1,
+  "widgets": {
+    "button": {
+      "style": "new-york",
+      "contentHash": "sha256:a3f5e8c9...",
+      "installedAt": "2026-02-14T10:30:00.000Z"
+    }
+  }
+}
+```
+
+This file is created automatically by `init` and updated by `add`, `remove`, and `update` commands. It enables change detection during updates and install status markers in `list`.
 
 ## Dependencies
 
@@ -163,6 +241,8 @@ Run `flutter pub get` after adding this dependency.
 - **Configuration Issues**:
   - Re-initialize with `flutcn_ui init`
   - Validate JSON syntax in `flutcn.config.json`
+- **Update Shows "newly tracked"**:
+  - Widget was installed before lockfile existed — this is normal, the widget is now tracked
 
 ## Development
 
@@ -173,18 +253,20 @@ Run `flutter pub get` after adding this dependency.
 - `lib/src/data/`: Data layer services
 - `lib/src/domain/`: Business logic and entities
 
-### Recent Improvements
+### Recent Improvements (v1.2.0)
 
-- ✔ Interactive multi-widget selection
-- ✔ File conflict resolution system
-- ✔ Batch operation progress tracking
-- ✔ Enhanced error handling
+- ✔ `remove` command — uninstall widgets (single, batch, `--force`)
+- ✔ `update` command — refresh widgets from registry (single, batch, `--all`)
+- ✔ Widget versioning — SHA-256 content hashing in `flutcn.lock.json`
+- ✔ Install status markers in `list` command
+- ✔ Change detection during updates (up-to-date / updated / newly tracked)
+- ✔ 64 unit tests
+- ✔ CI/CD pipeline (analysis, release tagging, pub.dev publishing)
 
 ## Roadmap ✨
 
-- [ ] Delete unused widgets command
-- [ ] Version diff checking
-- [ ] Component update system
+- [ ] `--path` option on `add` command — override default widget directory
+- [ ] Dependency resolution for widget inter-dependencies
 - [ ] Template override support
 
 ## Contributing

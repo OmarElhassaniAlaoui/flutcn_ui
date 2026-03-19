@@ -21,16 +21,21 @@ dart pub global activate --source path .
 flutcn_ui init
 flutcn_ui add <widget-name>
 flutcn_ui list
+flutcn_ui remove <widget-name>
+flutcn_ui update <widget-name>
 
 # Run the CLI directly from source (without global install)
 dart run bin/flutcn_ui.dart init
 dart run bin/flutcn_ui.dart add button
 dart run bin/flutcn_ui.dart list
+dart run bin/flutcn_ui.dart remove button
+dart run bin/flutcn_ui.dart update button
+dart run bin/flutcn_ui.dart update --all
 
 # Linting
 dart analyze
 
-# Run tests (when they exist)
+# Run tests (47 unit tests)
 dart test
 
 # Build runner (if code generation is added)
@@ -45,6 +50,9 @@ The CLI must be run from within a Flutter project directory (where `pubspec.yaml
 cd example
 dart run ../bin/flutcn_ui.dart init --default
 dart run ../bin/flutcn_ui.dart add button
+dart run ../bin/flutcn_ui.dart remove button
+dart run ../bin/flutcn_ui.dart update button
+dart run ../bin/flutcn_ui.dart update --all
 ```
 
 ## Architecture
@@ -119,7 +127,7 @@ API Service (core/services/)
 ### Configuration File
 - Generated at project root: `flutcn.config.json`
 - Stores: widgets path, theme path, style, base color
-- Must exist before running `add` or `list` commands
+- Must exist before running `add`, `list`, `remove`, or `update` commands
 
 ### Spinner Helper
 - Located in `lib/src/core/utils/spinners.dart`
@@ -156,6 +164,16 @@ When CLI runs `add`:
 - Creates widget directory (default: `lib/widgets/`)
 - Writes widget files with `.dart` extension
 - Checks for existing files and prompts for overwrite
+
+When CLI runs `remove`:
+- Deletes `.dart` files from configured widgets directory
+- Supports direct mode (`remove button`) and interactive multi-select
+- `--force` flag skips confirmation prompt
+
+When CLI runs `update`:
+- Re-downloads widget files from registry, overwriting local copies
+- Supports direct mode (`update button`), interactive multi-select, and `--all` flag
+- Checks widget exists locally before fetching from registry
 
 ## Code Style
 
@@ -196,12 +214,19 @@ SSH key requires a passphrase. Claude Code cannot enter passphrases interactivel
 
 1. Bump version in `pubspec.yaml` (use `scripts/bump_version.sh` or manually)
 2. Update `CHANGELOG.md` with new version section
-3. Merge to `main` (via git flow release/hotfix finish)
-4. `release.yml` creates the tag and GitHub release automatically
-5. Tag push triggers `publish.yml` which publishes to pub.dev
+3. Run `dart format lib bin` before committing (CI enforces formatting)
+4. Merge to `main` (via git flow release/hotfix finish or PR)
+5. `release.yml` creates the tag and GitHub release automatically
+6. **Important:** Tags created by `GITHUB_TOKEN` don't trigger `publish.yml`. After release, manually re-push the tag:
+   ```bash
+   git push origin :refs/tags/v<version>
+   git push origin v<version>
+   ```
+7. Tag push triggers `publish.yml` which publishes to pub.dev
 
 ### CI Notes
 
 - CI uses Dart SDK `3.6.2` (not Flutter) — `example/` is temporarily excluded during `dart pub get` since it's a Flutter project requiring Flutter SDK
 - Publishing requires `PUB_CREDENTIALS` GitHub secret (pub.dev OAuth2 credentials)
 - If using git flow (which creates tags locally), `release.yml` may skip tag creation — push tags explicitly or create GitHub releases manually
+- **Known limitation:** Tags pushed by `GITHUB_TOKEN` in workflows don't trigger other workflows (GitHub prevents chaining). Use the manual tag re-push workaround above, or switch `release.yml` to use a PAT

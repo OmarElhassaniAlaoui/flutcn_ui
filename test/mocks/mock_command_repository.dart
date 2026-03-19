@@ -11,12 +11,14 @@ import 'package:flutcn_ui/src/domain/repository/command_repository.dart';
 class MockCommandRepository implements CommandRepository {
   Either<Failure, Unit> initResult = const Right(unit);
   Either<Failure, WidgetEntity> addResult = const Right(
-    WidgetEntity(name: 'button', link: '/widgets/button', content: 'class Button {}'),
+    WidgetEntity(
+        name: 'button', link: '/widgets/button', content: 'class Button {}'),
   );
   Either<Failure, List<WidgetEntity>> listResult = const Right([]);
   Either<Failure, Unit> removeResult = const Right(unit);
   Either<Failure, WidgetEntity> updateResult = const Right(
-    WidgetEntity(name: 'button', link: '/widgets/button', content: 'class Button {}'),
+    WidgetEntity(
+        name: 'button', link: '/widgets/button', content: 'class Button {}'),
   );
 
   InitConfigEntity? lastInitConfig;
