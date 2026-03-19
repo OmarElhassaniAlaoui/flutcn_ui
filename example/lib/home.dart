@@ -2,6 +2,8 @@ import 'package:flutter/material.dart' hide Badge;
 import 'widgets/button.dart';
 import 'widgets/avatar.dart';
 import 'widgets/badge.dart';
+import 'widgets/input.dart';
+import 'widgets/card.dart';
 import 'widgets/theme_toggle_button.dart';
 
 /// Component Showcase Page
@@ -35,6 +37,14 @@ class HomePage extends StatelessWidget {
 
               // Badge Section
               _BadgeSection(),
+              const SizedBox(height: 40),
+
+              // Input Section
+              _InputSection(),
+              const SizedBox(height: 40),
+
+              // Card Section
+              _CardSection(),
               const SizedBox(height: 40),
             ],
           ),
@@ -495,6 +505,222 @@ class _BadgeSection extends StatelessWidget {
                     borderRadius: 6,
                   ),
                 ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Input showcase section
+class _InputSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionTitle(title: 'Input', subtitle: 'input'),
+        const SizedBox(height: 16),
+        _ShowcaseCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _SubsectionTitle(title: 'Default'),
+              const SizedBox(height: 16),
+              const FlutInput(hintText: 'Enter text...'),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'With Label'),
+              const SizedBox(height: 16),
+              const FlutInput(
+                label: 'Email',
+                hintText: 'you@example.com',
+                keyboardType: TextInputType.emailAddress,
+              ),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'With Icons'),
+              const SizedBox(height: 16),
+              const FlutInput(
+                hintText: 'Enter email',
+                prefixIcon: Icons.mail_outline,
+              ),
+              const SizedBox(height: 12),
+              const FlutInput(
+                hintText: 'Password',
+                obscureText: true,
+                prefixIcon: Icons.lock_outline,
+                suffixIcon: Icons.visibility_off_outlined,
+              ),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'Search'),
+              const SizedBox(height: 16),
+              const FlutInput.search(),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'States'),
+              const SizedBox(height: 16),
+              const FlutInput(
+                label: 'Username',
+                hintText: 'Enter username',
+                errorText: 'Username is already taken.',
+              ),
+              const SizedBox(height: 12),
+              const FlutInput(
+                hintText: 'Not available',
+                enabled: false,
+              ),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'Textarea'),
+              const SizedBox(height: 16),
+              const FlutInput(
+                hintText: 'Write a message...',
+                maxLines: 4,
+                minLines: 3,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Card showcase section
+class _CardSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionTitle(title: 'Card', subtitle: 'card'),
+        const SizedBox(height: 16),
+        _ShowcaseCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _SubsectionTitle(title: 'Simple Card'),
+              const SizedBox(height: 16),
+              FlutCard(
+                child: FlutCardContent(
+                  child: Text(
+                    'A minimal card with just content padding.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'With Header'),
+              const SizedBox(height: 16),
+              FlutCard(
+                child: Column(
+                  children: [
+                    const FlutCardHeader(
+                      children: [
+                        FlutCardTitle(text: 'Card Title'),
+                        FlutCardDescription(
+                            text: 'A short description of the card.'),
+                      ],
+                    ),
+                    FlutCardContent(
+                      child: Text(
+                        'This is the main content area.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'With Header, Content & Footer'),
+              const SizedBox(height: 16),
+              FlutCard(
+                child: Column(
+                  children: [
+                    const FlutCardHeader(
+                      children: [
+                        FlutCardTitle(text: 'Create project'),
+                        FlutCardDescription(
+                            text: 'Deploy your new project in one-click.'),
+                      ],
+                    ),
+                    const FlutCardContent(
+                      child: FlutInput(
+                        label: 'Project name',
+                        hintText: 'my-awesome-app',
+                      ),
+                    ),
+                    FlutCardFooter(
+                      children: [
+                        FlutButton(
+                          text: 'Cancel',
+                          variant: ButtonVariant.outline,
+                          onPressed: () {},
+                        ),
+                        FlutButton(
+                          text: 'Deploy',
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'Tappable Card'),
+              const SizedBox(height: 16),
+              FlutCard(
+                onTap: () {},
+                child: const FlutCardHeader(
+                  children: [
+                    FlutCardTitle(text: 'Tap me'),
+                    FlutCardDescription(
+                        text: 'This card is interactive — try tapping it.'),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              _SubsectionTitle(title: 'Custom Decoration'),
+              const SizedBox(height: 16),
+              FlutCard(
+                decorationOverride: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const FlutCardHeader(
+                  children: [
+                    FlutCardTitle(
+                      text: 'Gradient Card',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w700),
+                    ),
+                    FlutCardDescription(
+                      text: 'Using decorationOverride for full control.',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
